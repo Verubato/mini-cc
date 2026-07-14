@@ -962,8 +962,14 @@ function M:Refresh() end
 
 function M:Init()
 	db = mini:GetSavedVars()
-	db.TalentCache = db.TalentCache or {}
-	db.PvPTalentCache = db.PvPTalentCache or {}
+	-- Full type check: these are opaque cache keys that CleanTable never repairs,
+	-- so a hand-edited scalar would survive and throw in the pairs() loops below.
+	if type(db.TalentCache) ~= "table" then
+		db.TalentCache = {}
+	end
+	if type(db.PvPTalentCache) ~= "table" then
+		db.PvPTalentCache = {}
+	end
 
 	local now = time()
 	local maxAge = 86400 -- 1 day in seconds

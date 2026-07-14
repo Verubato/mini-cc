@@ -151,6 +151,28 @@ function M:NotifyCombatLockdown()
 	M:Notify(L["Can't do that during combat."])
 end
 
+---Resolves a SavedVariables anchor (Point/RelativeTo/RelativePoint/Offset) to a
+---real frame and applies it, falling back to centering on UIParent. Saved
+---variables are user-editable: RelativeTo may name a non-frame global and
+---Point/Offset may hold garbage; a bad anchor must never abort module init.
+---@param frame table the frame to anchor
+---@param anchorOptions table carries Point, RelativeTo, RelativePoint, Offset
+---@return table relativeTo the resolved anchor frame (UIParent on fallback)
+function M:ApplySavedAnchor(frame, anchorOptions)
+	local relativeTo = _G[anchorOptions.RelativeTo]
+	if type(relativeTo) ~= "table" or type(relativeTo.GetFrameLevel) ~= "function" then
+		relativeTo = UIParent
+	end
+	local offset = type(anchorOptions.Offset) == "table" and anchorOptions.Offset or {}
+	local ok = pcall(frame.SetPoint, frame,
+		anchorOptions.Point, relativeTo, anchorOptions.RelativePoint,
+		tonumber(offset.X) or 0, tonumber(offset.Y) or 0)
+	if not ok then
+		frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+	end
+	return relativeTo
+end
+
 function M:CopyTable(src, dst, seen)
 	if type(dst) ~= "table" then
 		dst = {}

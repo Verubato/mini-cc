@@ -343,8 +343,12 @@ function M:Init()
 	end
 
 	-- Persist the GUID->spec cache in saved variables so it survives reloads.
+	-- Full type check: SpecCache is an opaque cache key that CleanTable never
+	-- repairs, so a hand-edited scalar would survive and throw in PurgeOldEntries.
 	local db = addon.Core.Framework:GetSavedVars()
-	db.SpecCache = db.SpecCache or {}
+	if type(db.SpecCache) ~= "table" then
+		db.SpecCache = {}
+	end
 	unitGuidToSpec = db.SpecCache
 
 	PurgeOldEntries()

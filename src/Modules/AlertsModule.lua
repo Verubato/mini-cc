@@ -827,8 +827,10 @@ function M:Init()
 	db = mini:GetSavedVars()
 
 	local options = db.Modules.AlertsModule
-	local count = options.Icons.MaxIcons or 8
-	local size = options.Icons.Size
+	-- tonumber coercion (matching the sibling modules): scalar type mismatches
+	-- in user-edited SavedVariables survive CleanTable and would throw below.
+	local count = tonumber(options.Icons.MaxIcons) or 8
+	local size = tonumber(options.Icons.Size) or 32
 
 	cachedVoiceID = wowEx:ResolveVoiceID(options.TTS and options.TTS.VoiceID)
 	cachedTTSVolume = options.TTS and options.TTS.Volume or 100
@@ -838,14 +840,7 @@ function M:Init()
 
 	container = iconSlotContainer:New(UIParent, count, size, options.IconSpacing or 2, "Alerts", nil, "Alerts")
 
-	local initialRelativeTo = _G[options.RelativeTo] or UIParent
-	container.Frame:SetPoint(
-		options.Point,
-		initialRelativeTo,
-		options.RelativePoint,
-		options.Offset.X,
-		options.Offset.Y
-	)
+	local initialRelativeTo = mini:ApplySavedAnchor(container.Frame, options)
 	container.Frame:SetFrameLevel((initialRelativeTo:GetFrameLevel() or 0) + 5)
 	container.Frame:EnableMouse(false)
 	container.Frame:SetMovable(false)
@@ -870,14 +865,7 @@ function M:Init()
 	importantContainer = iconSlotContainer:New(UIParent, count, size, options.IconSpacing or 2, "Alerts", nil, "Alerts")
 
 	local impAnchor = options.Important or options
-	local impInitialRelativeTo = _G[impAnchor.RelativeTo] or UIParent
-	importantContainer.Frame:SetPoint(
-		impAnchor.Point,
-		impInitialRelativeTo,
-		impAnchor.RelativePoint,
-		impAnchor.Offset.X,
-		impAnchor.Offset.Y
-	)
+	local impInitialRelativeTo = mini:ApplySavedAnchor(importantContainer.Frame, impAnchor)
 	importantContainer.Frame:SetFrameLevel((impInitialRelativeTo:GetFrameLevel() or 0) + 5)
 	importantContainer.Frame:EnableMouse(false)
 	importantContainer.Frame:SetMovable(false)

@@ -172,13 +172,7 @@ function M:Refresh()
 	end
 
 	anchor:ClearAllPoints()
-	anchor:SetPoint(
-		options.Point,
-		_G[options.RelativeTo] or UIParent,
-		options.RelativePoint,
-		options.Offset.X,
-		options.Offset.Y
-	)
+	mini:ApplySavedAnchor(anchor, options)
 
 	local iconSize = tonumber(options.Icons.Size) or 40
 	container:SetIconSize(iconSize)

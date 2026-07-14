@@ -87,8 +87,7 @@ local function CreateKickBar()
 		options.Offset.Y = y
 	end)
 
-	local relativeTo = _G[options.RelativeTo] or UIParent
-	container.Frame:SetPoint(options.Point, relativeTo, options.RelativePoint, options.Offset.X, options.Offset.Y)
+	mini:ApplySavedAnchor(container.Frame, options)
 
 	kickBar.Container = container
 	kickBar.Anchor = container.Frame

@@ -79,7 +79,8 @@ end
 local function EnsurePayloadMigrated(payload)
 	if not migrator or type(payload) ~= "table" then return end
 	local current = migrator:GetSchemaVersion()
-	if payload.Version == nil then
+	if type(payload.Version) ~= "number" then
+		-- Missing (pre-stamping) or hand-edited garbage stamp: assume current.
 		payload.Version = current
 	elseif payload.Version < current then
 		migrator:MigrateProfilePayload(payload, payload.Version, db)
@@ -289,7 +290,9 @@ local function TryAutoSwitch()
 	local charKey = GetCharKey()
 	if not charKey then return end
 	local charRules = db.AutoSwitch[charKey]
-	if not charRules then return end
+	-- AutoSwitch contents are an opaque cache key that CleanTable never repairs;
+	-- a hand-edited scalar would throw on the index below.
+	if type(charRules) ~= "table" then return end
 	local specIdx = GetSpecialization and GetSpecialization()
 	if not specIdx then return end
 	local specId = GetSpecializationInfo(specIdx)

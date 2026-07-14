@@ -2541,20 +2541,20 @@ function M:RunDeferredMigrations(vars)
 
 	if vars.PendingScaleMigration26 then
 		local scale = UIParent:GetScale()
-		if vars.Modules then
+		-- Rescales only numeric sizes: scalar type mismatches in user-edited
+		-- SavedVariables survive CleanTable and would throw in the arithmetic.
+		local function RescaleIconSize(section)
+			if type(section) == "table" and type(section.Icons) == "table" and type(section.Icons.Size) == "number" then
+				section.Icons.Size = math.floor(section.Icons.Size * scale + 0.5)
+			end
+		end
+		if type(vars.Modules) == "table" then
 			local ccModule = vars.Modules.CCModule
-			if ccModule then
-				if ccModule.Default and ccModule.Default.Icons and ccModule.Default.Icons.Size then
-					ccModule.Default.Icons.Size = math.floor(ccModule.Default.Icons.Size * scale + 0.5)
-				end
-				if ccModule.Raid and ccModule.Raid.Icons and ccModule.Raid.Icons.Size then
-					ccModule.Raid.Icons.Size = math.floor(ccModule.Raid.Icons.Size * scale + 0.5)
-				end
+			if type(ccModule) == "table" then
+				RescaleIconSize(ccModule.Default)
+				RescaleIconSize(ccModule.Raid)
 			end
-			local petCCModule = vars.Modules.PetCCModule
-			if petCCModule and petCCModule.Icons and petCCModule.Icons.Size then
-				petCCModule.Icons.Size = math.floor(petCCModule.Icons.Size * scale + 0.5)
-			end
+			RescaleIconSize(vars.Modules.PetCCModule)
 		end
 		vars.PendingScaleMigration26 = nil
 		applied = true
@@ -2750,6 +2750,17 @@ function M:GetAndUpgradeDb()
 
 	local vars = mini:GetSavedVars()
 
+	-- A non-number Version (hand-edited SavedVariables) would throw on the
+	-- comparisons below and abort the whole addon's init; treat it like a
+	-- failed migration: reset, keep the data recoverable, tell the user.
+	if vars.Version ~= nil and type(vars.Version) ~= "number" then
+		local backup = BackupTable(vars)
+		local reset = M:SoftReset()
+		reset.MigrationBackup = backup
+		mini:Notify(L["A settings migration failed and your settings were reset to defaults. The previous data is kept under MigrationBackup in the saved variables."])
+		return reset
+	end
+
 	if vars.Version and vars.Version > dbDefaults.Version then
 		-- they are running some version ahead of us, let's reset to factory,
 		-- keeping the newer-schema data recoverable and telling the user
@@ -2807,10 +2818,11 @@ function M:GetAndUpgradeDb()
 	-- they are at the schema the db had before this chain ran (profiles cannot
 	-- predate v37, which introduced them). Runs before the final CleanTable so
 	-- retired context keys (e.g. IconSpacing) are still readable from vars.
-	if vars.Profiles then
+	if type(vars.Profiles) == "table" then
 		for _, payload in pairs(vars.Profiles) do
 			if type(payload) == "table" then
-				local fromVersion = payload.Version or math.max(preUpgradeVersion, 37)
+				local fromVersion = type(payload.Version) == "number" and payload.Version
+					or math.max(preUpgradeVersion, 37)
 				if fromVersion < dbDefaults.Version then
 					-- On failure the payload keeps its old shape (pre-fix behavior);
 					-- it must not block login.
