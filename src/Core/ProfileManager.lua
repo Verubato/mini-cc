@@ -82,14 +82,34 @@ end
 -- live db. Unstamped payloads predate version stamping (or came from an import)
 -- and are assumed current, which matches the pre-stamping behavior.
 local function EnsurePayloadMigrated(payload)
-	if not migrator or type(payload) ~= "table" then return end
+	if not migrator or type(payload) ~= "table" then return nil end
 	local current = migrator:GetSchemaVersion()
-	if type(payload.Version) ~= "number" then
-		-- Missing (pre-stamping) or hand-edited garbage stamp: assume current.
-		payload.Version = current
-	elseif payload.Version < current then
+	local version = payload.Version
+	local validVersion = type(version) == "number"
+		and version == version
+		and version ~= math.huge
+		and version ~= -math.huge
+		and version == math.floor(version)
+		and version > 0
+	if validVersion and version < current then
 		migrator:MigrateProfilePayload(payload, payload.Version, db)
 	end
+
+	-- Stored SavedVariables are user-editable just like imported profiles. Apply
+	-- only current-schema keys and value types, regardless of whether the stamp
+	-- was missing, corrupt, or from a newer version.
+	local sanitized = migrator:SanitizeProfilePayload(payload)
+	sanitized.Version = current
+	return sanitized
+end
+
+local function GetPreparedPayload(name)
+	if type(db.Profiles) ~= "table" then return nil end
+	local payload = EnsurePayloadMigrated(db.Profiles[name])
+	if payload then
+		db.Profiles[name] = payload
+	end
+	return payload
 end
 
 -- Saves the current live db payload into the active profile slot.
@@ -100,7 +120,7 @@ function M:SaveCurrentProfile()
 	-- Ensure all default keys are present before snapshotting so the saved
 	-- profile is always complete, even if some keys were never explicitly set.
 	if migrator then migrator:FillDefaults() end
-	db.Profiles = db.Profiles or {}
+	if type(db.Profiles) ~= "table" then db.Profiles = {} end
 	local slot = db.Profiles[name] or {}
 	for k in pairs(slot) do slot[k] = nil end
 	for _, k in ipairs(M.PayloadKeys) do
@@ -117,10 +137,12 @@ end
 
 ---@return string[]
 function M:GetProfileNames()
-	if not db or not db.Profiles then return {} end
+	if not db or type(db.Profiles) ~= "table" then return {} end
 	local names = {}
-	for name in pairs(db.Profiles) do
-		names[#names + 1] = name
+	for name, payload in pairs(db.Profiles) do
+		if type(name) == "string" and type(payload) == "table" then
+			names[#names + 1] = name
+		end
 	end
 	table.sort(names)
 	return names
@@ -135,7 +157,7 @@ end
 ---@param sourceName string? profile to copy from; nil = snapshot current live state
 function M:CreateProfile(name, sourceName)
 	if not db or not name or name == "" then return end
-	db.Profiles = db.Profiles or {}
+	if type(db.Profiles) ~= "table" then db.Profiles = {} end
 	if db.Profiles[name] then return end
 	if sourceName and db.Profiles[sourceName] then
 		db.Profiles[name] = DeepCopy(db.Profiles[sourceName])
@@ -153,11 +175,11 @@ end
 
 ---@param name string
 function M:DeleteProfile(name)
-	if not db or not db.Profiles then return end
+	if not db or type(db.Profiles) ~= "table" then return end
 	if not db.Profiles[name] then return end
 	if #M:GetProfileNames() <= 1 then return end
 	db.Profiles[name] = nil
-	if db.AutoSwitch then
+	if type(db.AutoSwitch) == "table" then
 		for _, charRules in pairs(db.AutoSwitch) do
 			if type(charRules) == "table" then
 				for k, v in pairs(charRules) do
@@ -169,8 +191,8 @@ function M:DeleteProfile(name)
 	if db.ActiveProfile == name then
 		local remaining = M:GetProfileNames()
 		if remaining[1] then
-			local payload = db.Profiles[remaining[1]]
-			EnsurePayloadMigrated(payload)
+			local payload = GetPreparedPayload(remaining[1])
+			if not payload then return end
 			for _, k in ipairs(M.PayloadKeys) do
 				if type(payload[k]) == "table" and type(db[k]) == "table" then
 					MutateTableInPlace(db[k], payload[k])
@@ -190,7 +212,7 @@ end
 ---@param oldName string
 ---@param newName string
 function M:RenameProfile(oldName, newName)
-	if not db or not db.Profiles then return end
+	if not db or type(db.Profiles) ~= "table" then return end
 	if oldName == newName or not newName or newName == "" then return end
 	if db.Profiles[newName] then return end
 	db.Profiles[newName] = db.Profiles[oldName]
@@ -198,7 +220,7 @@ function M:RenameProfile(oldName, newName)
 	if db.ActiveProfile == oldName then
 		db.ActiveProfile = newName
 	end
-	if db.AutoSwitch then
+	if type(db.AutoSwitch) == "table" then
 		for _, charRules in pairs(db.AutoSwitch) do
 			if type(charRules) == "table" then
 				for k, v in pairs(charRules) do
@@ -217,11 +239,11 @@ function M:SwitchProfile(name)
 		scheduler:RunWhenCombatEnds(function() M:SwitchProfile(name) end, "ProfileSwitch")
 		return
 	end
-	if not db.Profiles or not db.Profiles[name] then return end
+	if type(db.Profiles) ~= "table" or type(db.Profiles[name]) ~= "table" then return end
 	if db.ActiveProfile == name then return end
 	M:SaveCurrentProfile()
-	local payload = db.Profiles[name]
-	EnsurePayloadMigrated(payload)
+	local payload = GetPreparedPayload(name)
+	if not payload then return end
 	for _, k in ipairs(M.PayloadKeys) do
 		if type(payload[k]) == "table" and type(db[k]) == "table" then
 			MutateTableInPlace(db[k], payload[k])
@@ -241,11 +263,11 @@ end
 ---@param specId number
 ---@return string?
 function M:GetAutoSwitchRule(specId)
-	if not db or not db.AutoSwitch then return nil end
+	if not db or type(db.AutoSwitch) ~= "table" then return nil end
 	local charKey = GetCharKey()
 	if not charKey then return nil end
 	local charRules = db.AutoSwitch[charKey]
-	if not charRules then return nil end
+	if type(charRules) ~= "table" then return nil end
 	return charRules[specId]
 end
 
@@ -255,8 +277,8 @@ function M:SetAutoSwitchRule(specId, profileName)
 	if not db then return end
 	local charKey = GetCharKey()
 	if not charKey then return end
-	db.AutoSwitch = db.AutoSwitch or {}
-	db.AutoSwitch[charKey] = db.AutoSwitch[charKey] or {}
+	if type(db.AutoSwitch) ~= "table" then db.AutoSwitch = {} end
+	if type(db.AutoSwitch[charKey]) ~= "table" then db.AutoSwitch[charKey] = {} end
 	db.AutoSwitch[charKey][specId] = profileName
 end
 
@@ -291,7 +313,7 @@ function M:UnregisterOnProfileChanged(key)
 end
 
 local function TryAutoSwitch()
-	if not db or not db.AutoSwitch then return end
+	if not db or type(db.AutoSwitch) ~= "table" then return end
 	local charKey = GetCharKey()
 	if not charKey then return end
 	local charRules = db.AutoSwitch[charKey]
@@ -311,12 +333,19 @@ end
 function M:Init()
 	migrator = addon.Config.Migrator
 	db = mini:GetSavedVars()
+	if type(db.Profiles) ~= "table" then db.Profiles = {} end
+	if type(db.AutoSwitch) ~= "table" then db.AutoSwitch = {} end
+	if type(db.ActiveProfile) ~= "string" or db.ActiveProfile == "" then
+		db.ActiveProfile = "Default"
+	end
 	-- Ensure at least one profile slot exists. Handles first-time setup where
 	-- dbDefaults seeds Profiles = {} (empty), and any unexpected empty state.
-	if not db.Profiles or not next(db.Profiles) then
-		db.Profiles = db.Profiles or {}
-		db.ActiveProfile = db.ActiveProfile or "Default"
+	if not next(db.Profiles) then
 		M:CreateProfile("Default", nil)
+	end
+	if type(db.Profiles[db.ActiveProfile]) ~= "table" then
+		local names = M:GetProfileNames()
+		db.ActiveProfile = names[1] or "Default"
 	end
 
 	local eventsFrame = CreateFrame("Frame")

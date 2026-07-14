@@ -2674,6 +2674,14 @@ local function IsSaneScalar(v)
 	return false
 end
 
+local function IsFiniteInteger(v)
+	return type(v) == "number"
+		and v == v
+		and v ~= math.huge
+		and v ~= -math.huge
+		and v == math.floor(v)
+end
+
 ---Recursively copies from `data` only keys that exist in `template` with matching
 ---value types; everything else is dropped (FillDefaults backfills the gaps).
 ---An empty template table marks an opaque user hash (e.g. DisabledSpells): for
@@ -2711,6 +2719,9 @@ end
 ---@return table sanitized payload safe to store in db.Profiles
 function M:SanitizeProfilePayload(data)
 	local out = {}
+	if type(data) ~= "table" then
+		return out
+	end
 	for _, k in ipairs(addon.Core.ProfileManager.PayloadKeys) do
 		local v = data[k]
 		local defaultValue = dbDefaults[k]
@@ -2725,11 +2736,57 @@ function M:SanitizeProfilePayload(data)
 		end
 	end
 	local version = data.Version
-	if type(version) == "number" and version == math.floor(version)
+	if IsFiniteInteger(version)
 		and version > 0 and version <= dbDefaults.Version then
 		out.Version = version
 	end
 	return out
+end
+
+-- Opaque caches cannot be cleaned against empty-table defaults, but their
+-- outer shapes still have a contract. Repair those shapes before migrations or
+-- consumers index them; the pre-upgrade backup is taken first, so corrupt data
+-- remains recoverable.
+local function NormalizeOpaqueState(vars)
+	for _, key in ipairs({ "SpecCache", "TalentCache", "PvPTalentCache", "WhatsNew", "Profiles", "AutoSwitch" }) do
+		if type(vars[key]) ~= "table" then
+			vars[key] = {}
+		end
+	end
+	if type(vars.ActiveProfile) ~= "string" or vars.ActiveProfile == "" then
+		vars.ActiveProfile = "Default"
+	end
+	if type(vars.NotifiedChanges) ~= "boolean" then
+		vars.NotifiedChanges = true
+	end
+	if vars.PendingScaleMigration26 ~= nil and type(vars.PendingScaleMigration26) ~= "boolean" then
+		vars.PendingScaleMigration26 = nil
+	end
+	if vars.MigrationBackup ~= nil and type(vars.MigrationBackup) ~= "table" then
+		vars.MigrationBackup = nil
+	end
+	if vars.NameplateCVarBackup ~= nil and type(vars.NameplateCVarBackup) ~= "table" then
+		vars.NameplateCVarBackup = nil
+	end
+end
+
+local function SanitizeAutoSwitch(vars)
+	local clean = {}
+	for charKey, rules in pairs(vars.AutoSwitch) do
+		if type(charKey) == "string" and charKey ~= "" and type(rules) == "table" then
+			local cleanRules = {}
+			for specId, profileName in pairs(rules) do
+				if IsFiniteInteger(specId) and specId > 0
+					and type(profileName) == "string"
+					and type(vars.Profiles[profileName]) == "table"
+				then
+					cleanRules[specId] = profileName
+				end
+			end
+			clean[charKey] = cleanRules
+		end
+	end
+	vars.AutoSwitch = clean
 end
 
 ---@return Db
@@ -2750,10 +2807,10 @@ function M:GetAndUpgradeDb()
 
 	local vars = mini:GetSavedVars()
 
-	-- A non-number Version (hand-edited SavedVariables) would throw on the
-	-- comparisons below and abort the whole addon's init; treat it like a
-	-- failed migration: reset, keep the data recoverable, tell the user.
-	if vars.Version ~= nil and type(vars.Version) ~= "number" then
+	-- A malformed Version (including NaN/infinity/fractions) either throws in the
+	-- comparisons below or bypasses the migration loop. Treat it like a failed
+	-- migration: reset, keep the data recoverable, and tell the user.
+	if vars.Version ~= nil and (not IsFiniteInteger(vars.Version) or vars.Version < 0) then
 		local backup = BackupTable(vars)
 		local reset = M:SoftReset()
 		reset.MigrationBackup = backup
@@ -2780,6 +2837,8 @@ function M:GetAndUpgradeDb()
 	if preUpgradeVersion < dbDefaults.Version then
 		preUpgradeBackup = BackupTable(vars)
 	end
+
+	NormalizeOpaqueState(vars)
 
 	while (vars.Version or 0) < dbDefaults.Version do
 		local currentVersion = vars.Version or 0
@@ -2818,21 +2877,24 @@ function M:GetAndUpgradeDb()
 	-- they are at the schema the db had before this chain ran (profiles cannot
 	-- predate v37, which introduced them). Runs before the final CleanTable so
 	-- retired context keys (e.g. IconSpacing) are still readable from vars.
-	if type(vars.Profiles) == "table" then
-		for _, payload in pairs(vars.Profiles) do
-			if type(payload) == "table" then
-				local fromVersion = type(payload.Version) == "number" and payload.Version
-					or math.max(preUpgradeVersion, 37)
-				if fromVersion < dbDefaults.Version then
-					-- On failure the payload keeps its old shape (pre-fix behavior);
-					-- it must not block login.
-					M:MigrateProfilePayload(payload, fromVersion, vars)
-				else
-					payload.Version = dbDefaults.Version
-				end
+	for name, payload in pairs(vars.Profiles) do
+		if type(name) ~= "string" or name == "" or type(payload) ~= "table" then
+			vars.Profiles[name] = nil
+		else
+			local fromVersion = IsFiniteInteger(payload.Version)
+				and payload.Version > 0 and payload.Version
+				or math.max(preUpgradeVersion, 37)
+			if fromVersion < dbDefaults.Version then
+				-- Migration failure must not block login. Sanitization below still
+				-- removes values unsafe for the current schema.
+				M:MigrateProfilePayload(payload, fromVersion, vars)
 			end
+			local sanitized = M:SanitizeProfilePayload(payload)
+			sanitized.Version = dbDefaults.Version
+			vars.Profiles[name] = sanitized
 		end
 	end
+	SanitizeAutoSwitch(vars)
 
 	-- grab any new keys
 	vars = mini:GetSavedVars(dbDefaults)
