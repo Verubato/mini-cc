@@ -7,9 +7,11 @@ https://www.wowace.com/projects/libbuttonglow-1-0
 
 local MAJOR_VERSION = "LibCustomGlow-1.0"
 -- Locally patched (Color-object/secret-value support completed across ButtonGlow,
--- ProcGlow, and the anim handlers); minor bumped above upstream 24 so a stock
--- copy shipped by another addon cannot win the LibStub race and drop the patch.
-local MINOR_VERSION = 25
+-- ProcGlow, and the anim handlers; frame/texture/mask pools preserved across
+-- LibStub upgrades so in-flight glows are not orphaned); minor bumped above
+-- upstream 24 so a stock copy shipped by another addon cannot win the LibStub
+-- race and drop the patch.
+local MINOR_VERSION = 26
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
 if not lib then return end
@@ -80,7 +82,12 @@ local GlowMaskPool = {
         self.parent = parent
     end
 }
-GlowMaskPool:Init(GlowParent)
+if lib.GlowMaskPool then
+    GlowMaskPool = lib.GlowMaskPool -- reuse the previous generation's pool across a LibStub upgrade
+else
+    GlowMaskPool:Init(GlowParent)
+    lib.GlowMaskPool = GlowMaskPool
+end
 
 local TexPoolResetter = function(pool,tex)
     local maskNum = tex:GetNumMaskTextures()
@@ -90,7 +97,7 @@ local TexPoolResetter = function(pool,tex)
     tex:Hide()
     tex:ClearAllPoints()
 end
-local GlowTexPool = CreateTexturePool(GlowParent ,"ARTWORK",7,nil,TexPoolResetter)
+local GlowTexPool = lib.GlowTexPool or CreateTexturePool(GlowParent ,"ARTWORK",7,nil,TexPoolResetter)
 lib.GlowTexPool = GlowTexPool
 
 local FramePoolResetter = function(framePool,frame)
@@ -121,7 +128,7 @@ local FramePoolResetter = function(framePool,frame)
     frame:Hide()
     frame:ClearAllPoints()
 end
-local GlowFramePool = CreateFramePool("Frame",GlowParent,nil,FramePoolResetter)
+local GlowFramePool = lib.GlowFramePool or CreateFramePool("Frame",GlowParent,nil,FramePoolResetter)
 lib.GlowFramePool = GlowFramePool
 
 local function addFrameAndTex(r,color,name,key,N,xOffset,yOffset,texture,texCoord,desaturated,frameLevel)
@@ -487,7 +494,7 @@ local function ButtonGlowResetter(framePool,frame)
     frame:Hide()
     frame:ClearAllPoints()
 end
-local ButtonGlowPool = CreateFramePool("Frame",GlowParent,nil,ButtonGlowResetter)
+local ButtonGlowPool = lib.ButtonGlowPool or CreateFramePool("Frame",GlowParent,nil,ButtonGlowResetter)
 lib.ButtonGlowPool = ButtonGlowPool
 
 local function CreateScaleAnim(group, target, order, duration, x, y, delay)
@@ -801,7 +808,7 @@ local function ProcGlowResetter(framePool, frame)
     end
 end
 
-local ProcGlowPool = CreateFramePool("Frame", GlowParent, nil, ProcGlowResetter)
+local ProcGlowPool = lib.ProcGlowPool or CreateFramePool("Frame", GlowParent, nil, ProcGlowResetter)
 lib.ProcGlowPool = ProcGlowPool
 
 local function InitProcGlow(f)
