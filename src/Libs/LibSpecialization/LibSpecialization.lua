@@ -4,7 +4,20 @@ local cataWowID = 14
 local mistsWowID = 19
 if wowID ~= 1 and wowID ~= cataWowID and wowID ~= mistsWowID then return end -- Retail, Cata, Mists
 
-local LS, oldminor = LibStub:NewLibrary("LibSpecialization", 25)
+do
+	-- Register the comm prefix BEFORE touching LibStub: if this errors it must
+	-- abort the file without leaving a half-initialized library registered in
+	-- LibStub (which would block healthy copies and nil-call consumers).
+	local result = C_ChatInfo.RegisterAddonMessagePrefix("LibSpec")
+	-- 0=success, 1=duplicate, 2=invalid, 3=toomany
+	if type(result) == "number" and result > 1 then
+		error("LibSpecialization: Failed to register the addon prefix.")
+	end
+end
+
+-- Locally patched (prefix registration moved above the LibStub registration);
+-- minor bumped above upstream 25 so this fixed copy wins the LibStub race.
+local LS, oldminor = LibStub:NewLibrary("LibSpecialization", 26)
 if not LS then return end -- No upgrade needed
 
 LS.callbackMapGroup = LS.callbackMapGroup or {}
@@ -228,14 +241,6 @@ local callbackMapGuild = LS.callbackMapGuild
 
 local type, error, format = type, error, string.format
 local geterrorhandler, GetTime = geterrorhandler, GetTime
-
-do
-	local result = C_ChatInfo.RegisterAddonMessagePrefix("LibSpec")
-	-- 0=success, 1=duplicate, 2=invalid, 3=toomany
-	if type(result) == "number" and result > 1 then
-		error("LibSpecialization: Failed to register the addon prefix.")
-	end
-end
 
 -- Handle groups (comms are automatic)
 function LS.RegisterGroup(addon, func)

@@ -997,8 +997,11 @@ function M:Init()
 	end
 
 	-- Register with LibSpecialization for group member talent strings.
+	-- RegisterGroup existence check: a stock LibSpecialization copy from another
+	-- addon can abort mid-file after registering with LibStub, leaving a hollow
+	-- table behind (no API functions).
 	local libSpec = LibStub and LibStub("LibSpecialization", true)
-	if libSpec then
+	if libSpec and libSpec.RegisterGroup then
 		libSpec.RegisterGroup(addon, function(specId, _, _, playerName, talentString)
 			OnLibSpecUpdate(specId, playerName, talentString)
 		end)
