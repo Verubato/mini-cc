@@ -21,11 +21,13 @@ local Ambiguate = Ambiguate
 -- Shared current message updated before either send function fires.
 local currentMsg = ""
 
--- 0=success, 1=duplicate, 2=invalid, 3=toomany. Duplicate is fine (prefix already
--- registered, e.g. after a UI reload); anything else means talent sync is dead,
--- which must be surfaced rather than silently degrading cooldown accuracy.
 local registerResult = C_ChatInfo.RegisterAddonMessagePrefix(prefix)
-if registerResult ~= 0 and registerResult ~= 1 then
+-- Retail returns a boolean; older clients used 0=success/1=duplicate. Keep both
+-- conventions because this module's communication code is shared with the
+-- multi-flavor vendored library.
+local syncEnabled = registerResult == true
+	or (type(registerResult) == "number" and registerResult <= 1)
+if not syncEnabled then
 	print(addonName .. " - PvP talent sync disabled: addon message prefix registration failed (" .. tostring(registerResult) .. ")")
 end
 
@@ -138,7 +140,7 @@ function M:RequestSync()
 	-- Fire own data immediately for local use.
 	FireCallbacks(pName, GetLocalPvPTalentIds())
 
-	if IsInGroup() then
+	if syncEnabled and IsInGroup() then
 		if IsInGroup(2) then
 			SendAddonMessage(prefix, "R", "INSTANCE_CHAT")
 		end
@@ -150,6 +152,7 @@ end
 
 frame:SetScript("OnEvent", function(_, event, p, msg, channel, sender)
 	if event == "CHAT_MSG_ADDON" then
+		if not syncEnabled then return end
 		-- Secret payloads (possible in restricted 12.x contexts) would raise inside
 		-- the string operations below; same guard as vendored LibSpecialization.
 		if issecretvalue(msg) or issecretvalue(sender) then
@@ -172,7 +175,7 @@ frame:SetScript("OnEvent", function(_, event, p, msg, channel, sender)
 	elseif event == "PLAYER_PVP_TALENT_UPDATE" then
 		-- Broadcast updated talents and notify local callbacks.
 		FireCallbacks(pName, GetLocalPvPTalentIds())
-		if IsInGroup() then
+		if syncEnabled and IsInGroup() then
 			if IsInGroup(2) then
 				PrepareForInstance()
 			end
@@ -185,7 +188,9 @@ frame:SetScript("OnEvent", function(_, event, p, msg, channel, sender)
 	end
 end)
 
-frame:RegisterEvent("CHAT_MSG_ADDON")
+if syncEnabled then
+	frame:RegisterEvent("CHAT_MSG_ADDON")
+end
 frame:RegisterEvent("GROUP_FORMED")
 frame:RegisterEvent("PLAYER_PVP_TALENT_UPDATE")
 frame:RegisterEvent("PLAYER_LOGIN")

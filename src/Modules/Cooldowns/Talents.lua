@@ -980,17 +980,27 @@ function M:Init()
 
 	local now = time()
 	local maxAge = 86400 -- 1 day in seconds
+	local function IsFiniteNumber(value)
+		return type(value) == "number"
+			and value == value
+			and value ~= math.huge
+			and value ~= -math.huge
+	end
+	local function IsPositiveInteger(value)
+		return IsFiniteNumber(value) and value == math.floor(value) and value > 0
+	end
 
 	-- Restore talent data from saved vars so CDR calculations work immediately after
 	-- a reload. SavedVariables is a trust boundary (user-edited, machine-synced) and
 	-- the module-init loop has no per-module isolation, so a malformed entry must be
 	-- dropped rather than allowed to abort initialization of every later module.
 	for name, entry in pairs(db.TalentCache) do
-		if type(entry) ~= "table"
-			or type(entry.Time) ~= "number"
+		if type(name) ~= "string"
+			or type(entry) ~= "table"
+			or not IsFiniteNumber(entry.Time)
 			or (now - entry.Time) > maxAge
 			or type(entry.TalentString) ~= "string"
-			or type(entry.SpecId) ~= "number"
+			or not IsPositiveInteger(entry.SpecId)
 		then
 			db.TalentCache[name] = nil
 		else
@@ -1008,20 +1018,30 @@ function M:Init()
 
 	-- Restore PvP talent data from saved vars.
 	for name, entry in pairs(db.PvPTalentCache) do
-		if type(entry) ~= "table"
-			or type(entry.Time) ~= "number"
+		if type(name) ~= "string"
+			or type(entry) ~= "table"
+			or not IsFiniteNumber(entry.Time)
 			or (now - entry.Time) > maxAge
 			or type(entry.Ids) ~= "table"
 		then
 			db.PvPTalentCache[name] = nil
 		else
 			local set = {}
+			local valid = true
 			for _, id in ipairs(entry.Ids) do
-				if type(id) == "number" then
-					set[id] = true
+				if not IsPositiveInteger(id)
+					or (GetPvpTalentInfoByID and GetPvpTalentInfoByID(id) == nil)
+				then
+					valid = false
+					break
 				end
+				set[id] = true
 			end
-			unitPvPTalentIds[name] = set
+			if valid then
+				unitPvPTalentIds[name] = set
+			else
+				db.PvPTalentCache[name] = nil
+			end
 		end
 	end
 
