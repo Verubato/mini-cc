@@ -981,13 +981,23 @@ function M:Init()
 	local now = time()
 	local maxAge = 86400 -- 1 day in seconds
 
-	-- Restore talent data from saved vars so CDR calculations work immediately after a reload.
+	-- Restore talent data from saved vars so CDR calculations work immediately after
+	-- a reload. SavedVariables is a trust boundary (user-edited, machine-synced) and
+	-- the module-init loop has no per-module isolation, so a malformed entry must be
+	-- dropped rather than allowed to abort initialization of every later module.
 	for name, entry in pairs(db.TalentCache) do
-		if not entry.Time or (now - entry.Time) > maxAge then
+		if type(entry) ~= "table"
+			or type(entry.Time) ~= "number"
+			or (now - entry.Time) > maxAge
+			or type(entry.TalentString) ~= "string"
+			or type(entry.SpecId) ~= "number"
+		then
 			db.TalentCache[name] = nil
 		else
-			local ranks = GetTalentRanks(entry.SpecId, entry.TalentString)
-			if ranks then
+			-- GetTalentRanks decodes the persisted string via ImportDataStreamMixin,
+			-- which can throw on corrupted data.
+			local ok, ranks = pcall(GetTalentRanks, entry.SpecId, entry.TalentString)
+			if ok and ranks then
 				unitTalentRanks[name] = ranks
 				unitTalentSpecId[name] = entry.SpecId
 			else
@@ -998,12 +1008,18 @@ function M:Init()
 
 	-- Restore PvP talent data from saved vars.
 	for name, entry in pairs(db.PvPTalentCache) do
-		if not entry.Time or (now - entry.Time) > maxAge then
+		if type(entry) ~= "table"
+			or type(entry.Time) ~= "number"
+			or (now - entry.Time) > maxAge
+			or type(entry.Ids) ~= "table"
+		then
 			db.PvPTalentCache[name] = nil
 		else
 			local set = {}
 			for _, id in ipairs(entry.Ids) do
-				set[id] = true
+				if type(id) == "number" then
+					set[id] = true
+				end
 			end
 			unitPvPTalentIds[name] = set
 		end
