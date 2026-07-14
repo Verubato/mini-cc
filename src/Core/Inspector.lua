@@ -13,6 +13,10 @@ local cacheExpiry      = 60 * 60 * 24 * 3 -- 3 days
 
 local unitGuidToSpec      = {}
 local priorityStack       = {}
+-- Companion set for priorityStack: hot callers (per-frame display code) can
+-- request the same token many times inside one run-loop window; each duplicate
+-- pop would otherwise fire a redundant NotifyInspect server request.
+local priorityPending     = {}
 local requestedUnit       = nil
 local currentInspectUnit  = nil
 local isOurInspect        = false
@@ -206,10 +210,15 @@ local function GetNextTarget()
 	while #priorityStack > 0 do
 		local unit = priorityStack[#priorityStack]
 		priorityStack[#priorityStack] = nil
+		priorityPending[unit] = nil
 		if UnitExists(unit) then
 			local guid = UnitGUID(unit)
 			if guid and not issecretvalue(guid) then
-				return unit
+				-- Skip units whose spec arrived while they sat on the stack.
+				local cacheEntry = unitGuidToSpec[guid]
+				if not (cacheEntry and cacheEntry.SpecId and cacheEntry.SpecId > 0) then
+					return unit
+				end
 			end
 		end
 	end
@@ -337,7 +346,8 @@ function M:GetUnitSpecId(unit)
 	end
 
 	-- Queue for async inspection on the next run loop tick.
-	if not cacheEntry then
+	if not cacheEntry and not priorityPending[unit] then
+		priorityPending[unit] = true
 		priorityStack[#priorityStack + 1] = unit
 		needUpdate = true
 	end
@@ -380,6 +390,7 @@ function M:Init()
 			InvalidateEntry(unit)
 		elseif event == "PLAYER_ENTERING_WORLD" then
 			priorityStack = {}
+			priorityPending = {}
 		end
 	end)
 	eventsFrame:RegisterEvent("INSPECT_READY")
