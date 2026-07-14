@@ -136,6 +136,11 @@ end
 
 frame:SetScript("OnEvent", function(_, event, p, msg, channel, sender)
 	if event == "CHAT_MSG_ADDON" then
+		-- Secret payloads (possible in restricted 12.x contexts) would raise inside
+		-- the string operations below; same guard as vendored LibSpecialization.
+		if issecretvalue(msg) or issecretvalue(sender) then
+			return
+		end
 		if p == prefix and (channel == "RAID" or channel == "PARTY" or channel == "INSTANCE_CHAT") then
 			if msg == "R" then
 				if channel == "INSTANCE_CHAT" then
