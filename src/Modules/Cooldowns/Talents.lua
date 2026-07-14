@@ -1033,13 +1033,44 @@ function M:Init()
 		end)
 	end
 
-	-- Track local player talent changes.
+	-- Drop in-memory entries for players no longer in the group; without this the
+	-- name-keyed maps grow with every unique player seen until /reload. The disk
+	-- caches keep their own 1-day expiry, and rejoining players re-sync via
+	-- LibSpecialization / PvPTalentSync, so pruning here loses nothing durable.
+	local function PruneDepartedMembers()
+		local current = {}
+		current[UnitDataKey("player") or ""] = true
+		for i = 1, (MAX_PARTY_MEMBERS or 4) do
+			local key = UnitDataKey("party" .. i)
+			if key then current[key] = true end
+		end
+		for i = 1, (MAX_RAID_MEMBERS or 40) do
+			local key = UnitDataKey("raid" .. i)
+			if key then current[key] = true end
+		end
+		for _, map in ipairs({ unitTalentRanks, unitTalentSpecId, unitPvPTalentIds, processedTalentStrings }) do
+			for name in pairs(map) do
+				if not current[name] then
+					map[name] = nil
+				end
+			end
+		end
+	end
+
+	-- Track local player talent changes; prune departed members on roster changes.
 	local frame = CreateFrame("Frame")
-	frame:SetScript("OnEvent", UpdateLocalPlayer)
+	frame:SetScript("OnEvent", function(_, event)
+		if event == "GROUP_ROSTER_UPDATE" then
+			PruneDepartedMembers()
+		else
+			UpdateLocalPlayer()
+		end
+	end)
 	frame:RegisterEvent("ACTIVE_COMBAT_CONFIG_CHANGED")
 	frame:RegisterEvent("TRAIT_CONFIG_UPDATED")
 	frame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 	frame:RegisterEvent("PLAYER_LOGIN")
+	frame:RegisterEvent("GROUP_ROSTER_UPDATE")
 
 	-- Receive PvP talent data from group members via PvPTalentSync.
 	addon.Modules.Cooldowns.PvPTalentSync:RegisterCallback(function(playerName, pvpTalentIds)
