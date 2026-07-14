@@ -4344,7 +4344,7 @@ end
 -- @param inCombat if true, only checkers that can be used in combat ar returned
 -- @return **checker**, **range** pair or **nil** if no suitable checker is available. **range** is the actual range the returned **checker** checks for.
 function lib:GetMiscMaxChecker(range, inCombat)
-  return getMaxChecker(inCombat and self.miscRCInCombat and self.miscRC, range)
+  return getMaxChecker(inCombat and self.miscRCInCombat or self.miscRC, range)
 end
 
 --- Return a checker for the given range for friendly units.
