@@ -12,10 +12,19 @@ addon.Core.InspectorFacade = M
 ---@param unit string
 ---@return number|nil
 function M:GetUnitSpecId(unit)
+	-- The internal Inspector fallback tolerates nil; match that here rather than
+	-- erroring on unit:match below.
+	if type(unit) ~= "string" then
+		return nil
+	end
+
 	local fs = FrameSortApi and FrameSortApi.v3
 	if fs and fs.Inspector then
-		local id = fs.Inspector:GetUnitSpecId(unit)
-		if id then
+		-- Third-party code (trust boundary): a broken FrameSort must not
+		-- propagate errors into our callers (including KickTracker's
+		-- interrupt path).
+		local ok, id = pcall(fs.Inspector.GetUnitSpecId, fs.Inspector, unit)
+		if ok and id then
 			return id
 		end
 	end
