@@ -23,11 +23,10 @@ M.SoundFiles = {
 	"WhooshSwing.ogg",
 }
 
-local locale = GetLocale()
-
-if locale == "zhCN" or locale == "zhTW" then
-	table.insert(M.SoundFiles, "XiaYike.ogg")
-end
+-- Available to all locales: gating on the client language at file load ignored
+-- the addon's own language override, and hid a previously saved selection from
+-- the dropdown after a client-language switch even though the file always ships.
+table.insert(M.SoundFiles, "XiaYike.ogg")
 
 function M:Apply()
 	if InCombatLockdown() then
