@@ -146,7 +146,13 @@ function addon:ToggleTest(isRaid)
 	if testModeManager:IsActive() then
 		testModeManager:StopTesting()
 	else
-		testModeManager:StartTesting(isRaid ~= nil and isRaid or self.CurrentTestIsRaid)
+		-- Explicit nil check: `isRaid ~= nil and isRaid or default` would collapse
+		-- an explicit false into the remembered default.
+		local raid = isRaid
+		if raid == nil then
+			raid = self.CurrentTestIsRaid
+		end
+		testModeManager:StartTesting(raid)
 	end
 
 	addon:Refresh()
