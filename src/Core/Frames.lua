@@ -641,30 +641,6 @@ function M:MSUFFrames(visibleOnly)
 	return frames
 end
 
----Retrieves a list of custom frames from our saved vars.
----@param visibleOnly boolean
----@return table
-function M:CustomFrames(visibleOnly)
-	local frames = {}
-	local i = 1
-	local anchor = db["Anchor" .. i]
-
-	while anchor and anchor ~= "" do
-		local frame = _G[anchor]
-
-		if not frame then
-			mini:Notify("Bad anchor%d: '%s'.", i, anchor)
-		elseif frame:IsVisible() or not visibleOnly then
-			frames[#frames + 1] = frame
-		end
-
-		i = i + 1
-		anchor = db["Anchor" .. i]
-	end
-
-	return frames
-end
-
 ---Registers an external frame provider. Providers contribute frames to GetAll.
 ---Expected shape:
 ---  Name (string)                          identifier for the provider
