@@ -27,6 +27,9 @@ local v1 = {}
 ---(i.e. the associated buff has been detected on the unit).
 ---@param fn MiniCCPredictedCallback
 function v1:RegisterPredictedCallback(fn)
+	if type(fn) ~= "function" then
+		error("MiniCCApi.v1:RegisterPredictedCallback expects a function, got " .. type(fn), 2)
+	end
 	fcdModule:RegisterPredictedCallback(fn)
 end
 
@@ -34,6 +37,9 @@ end
 ---(i.e. the aura has ended and the cooldown timer has started).
 ---@param fn MiniCCMatchedCallback
 function v1:RegisterMatchedCallback(fn)
+	if type(fn) ~= "function" then
+		error("MiniCCApi.v1:RegisterMatchedCallback expects a function, got " .. type(fn), 2)
+	end
 	fcdModule:RegisterMatchedCallback(fn)
 end
 

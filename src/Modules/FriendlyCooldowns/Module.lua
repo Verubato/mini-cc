@@ -554,7 +554,9 @@ function M:Init()
 			local unit = casterEntries[1] and casterEntries[1].Unit or detectedFromEntry.Unit
 			local spellType = rules.GetSpellType(cdData.SpellId)
 			for _, fn in ipairs(matchedCallbacks) do
-				securecallfunction(fn, unit, cdData.SpellId, spellType)
+				-- xpcall so one failing external subscriber cannot abort the UNIT_AURA
+				-- processing chain; securecallfunction preserved for taint isolation.
+				xpcall(securecallfunction, geterrorhandler(), fn, unit, cdData.SpellId, spellType)
 			end
 		end
 	end)
@@ -592,7 +594,9 @@ function M:Init()
 			local unit = casterUnit or entry.Unit
 			local spellType = rules.GetSpellType(spellId)
 			for _, fn in ipairs(predictedCallbacks) do
-				securecallfunction(fn, unit, spellId, spellType)
+				-- xpcall so one failing external subscriber cannot abort the UNIT_AURA
+				-- processing chain; securecallfunction preserved for taint isolation.
+				xpcall(securecallfunction, geterrorhandler(), fn, unit, spellId, spellType)
 			end
 		end
 	end)
@@ -862,6 +866,9 @@ end
 ---Signature: function(unit, spellId, spellType) where spellType is "Defensive"
 ---@param fn function
 function M:RegisterPredictedCallback(fn)
+	if type(fn) ~= "function" then
+		error("RegisterPredictedCallback expects a function, got " .. type(fn), 2)
+	end
 	predictedCallbacks[#predictedCallbacks + 1] = fn
 end
 
@@ -869,6 +876,9 @@ end
 ---Signature: function(unit, spellId, spellType) where spellType is "Defensive"
 ---@param fn function
 function M:RegisterMatchedCallback(fn)
+	if type(fn) ~= "function" then
+		error("RegisterMatchedCallback expects a function, got " .. type(fn), 2)
+	end
 	matchedCallbacks[#matchedCallbacks + 1] = fn
 end
 
