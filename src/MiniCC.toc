@@ -74,6 +74,7 @@ Api\v1.lua
 
 Config\Migrator.lua
 Config\Config.lua
+Config\SharedBuilders.lua
 Config\General.lua
 Config\Portraits.lua
 Config\CrowdControl.lua

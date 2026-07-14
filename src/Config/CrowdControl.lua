@@ -104,6 +104,126 @@ end
 
 ---@param panel table
 ---@param options CrowdControlInstanceOptions
+---Builds the shared tail of a CC instance panel: Grow dropdown, icon size
+---(px/%), max icons, icon padding, anchor-panel placement, and the size-mode
+---refresh closure. Shared by BuildInstance and BuildPetInstance, which differ
+---only in the anchor frame and three slider fallbacks.
+---@param parent table
+---@param options table
+---@param anchorPanel table        result of BuildAnchorSettings(parent, options)
+---@param growAnchor table         frame the Grow dropdown anchors beneath
+---@param sizeFallback number      ClampInt fallback for pixel Icon Size (32 party, 24 pet)
+---@param pctDefault number        fallback/default for Icon Size % (80 party, 50 pet)
+---@param maxIconsFallback number  GetValue fallback for Max Icons (5 party, 3 pet)
+---@return fun() refreshSizeMode
+local function BuildIconLayoutControls(parent, options, anchorPanel, growAnchor, sizeFallback, pctDefault, maxIconsFallback)
+	local growDdl = BuildGrowDropdown(parent, options, growAnchor)
+
+	local iconSize = mini:Slider({
+		Parent = parent,
+		Min = 10,
+		Max = 100,
+		Width = columnWidth * 2 - horizontalSpacing,
+		Step = 1,
+		LabelText = L["Icon Size"],
+		GetValue = function()
+			return options.Icons.Size
+		end,
+		SetValue = function(v)
+			local newValue = mini:ClampInt(v, 10, 100, sizeFallback)
+			if options.Icons.Size ~= newValue then
+				options.Icons.Size = newValue
+				config:Apply()
+			end
+		end,
+	})
+
+	iconSize.Slider:SetPoint("TOPLEFT", growDdl, "BOTTOMLEFT", 0, -verticalSpacing * 3)
+
+	local iconSizePct = mini:Slider({
+		Parent = parent,
+		Min = 25,
+		Max = 100,
+		Width = columnWidth * 2 - horizontalSpacing,
+		Step = 1,
+		LabelText = L["Icon Size (%)"],
+		GetValue = function()
+			return options.Icons.SizePercent or pctDefault
+		end,
+		SetValue = function(v)
+			local newValue = mini:ClampInt(v, 25, 100, pctDefault)
+			if options.Icons.SizePercent ~= newValue then
+				options.Icons.SizePercent = newValue
+				config:Apply()
+			end
+		end,
+	})
+
+	iconSizePct.Slider:SetPoint("TOPLEFT", iconSize.Slider, "TOPLEFT", 0, 0)
+
+	local refreshSizeMode = function()
+		local isPercent = options.Icons.SizeIsPercent == true
+		iconSize.Slider:SetShown(not isPercent)
+		iconSize.Label:SetShown(not isPercent)
+		iconSize.EditBox:SetShown(not isPercent)
+		iconSizePct.Slider:SetShown(isPercent)
+		iconSizePct.Label:SetShown(isPercent)
+		iconSizePct.EditBox:SetShown(isPercent)
+	end
+	refreshSizeMode()
+
+	local maxIcons = mini:Slider({
+		Parent = parent,
+		Min = 1,
+		Max = 5,
+		Width = columnWidth * 2 - horizontalSpacing,
+		Step = 1,
+		LabelText = L["Max Icons"],
+		GetValue = function()
+			return options.Icons.Count or maxIconsFallback
+		end,
+		SetValue = function(v)
+			local newValue = mini:ClampInt(v, 1, 5, 3)
+			if options.Icons.Count ~= newValue then
+				options.Icons.Count = newValue
+				config:Apply()
+			end
+		end,
+	})
+
+	maxIcons.Slider:SetPoint("LEFT", iconSize.Slider, "RIGHT", horizontalSpacing, 0)
+
+	local iconSpacing = mini:Slider({
+		Parent = parent,
+		Min = 0,
+		Max = 20,
+		Width = columnWidth * 2 - horizontalSpacing,
+		Step = 1,
+		LabelText = L["Icon Padding"],
+		GetValue = function()
+			return options.IconSpacing or 2
+		end,
+		SetValue = function(v)
+			local newValue = mini:ClampInt(v, 0, 20, 2)
+			if options.IconSpacing ~= newValue then
+				options.IconSpacing = newValue
+				config:Apply()
+			end
+		end,
+	})
+
+	iconSpacing.Slider:SetPoint("TOPLEFT", iconSize.Slider, "BOTTOMLEFT", 0, -verticalSpacing * 2)
+
+	anchorPanel:SetPoint("TOPLEFT", iconSpacing.Slider, "BOTTOMLEFT", 0, -verticalSpacing * 2)
+	anchorPanel:SetPoint("TOPRIGHT", iconSpacing.Slider, "BOTTOMRIGHT", 0, -verticalSpacing * 2)
+
+	parent.OnMiniRefresh = function()
+		anchorPanel:MiniRefresh()
+	end
+
+	return refreshSizeMode
+end
+
 local function BuildInstance(panel, options)
 	local parent = CreateFrame("Frame", nil, panel)
 	local anchorPanel = BuildAnchorSettings(parent, options)
@@ -220,109 +340,7 @@ local function BuildInstance(panel, options)
 	relativeSizeChk:SetPoint("LEFT", parent, "LEFT", columnWidth * 2, 0)
 	relativeSizeChk:SetPoint("TOP", showTooltipsChk, "TOP", 0, 0)
 
-	local growDdl = BuildGrowDropdown(parent, options, showTooltipsChk)
-
-	local iconSize = mini:Slider({
-		Parent = parent,
-		Min = 10,
-		Max = 100,
-		Width = columnWidth * 2 - horizontalSpacing,
-		Step = 1,
-		LabelText = L["Icon Size"],
-		GetValue = function()
-			return options.Icons.Size
-		end,
-		SetValue = function(v)
-			local newValue = mini:ClampInt(v, 10, 100, 32)
-			if options.Icons.Size ~= newValue then
-				options.Icons.Size = newValue
-				config:Apply()
-			end
-		end,
-	})
-
-	iconSize.Slider:SetPoint("TOPLEFT", growDdl, "BOTTOMLEFT", 0, -verticalSpacing * 3)
-
-	local iconSizePct = mini:Slider({
-		Parent = parent,
-		Min = 25,
-		Max = 100,
-		Width = columnWidth * 2 - horizontalSpacing,
-		Step = 1,
-		LabelText = L["Icon Size (%)"],
-		GetValue = function()
-			return options.Icons.SizePercent or 80
-		end,
-		SetValue = function(v)
-			local newValue = mini:ClampInt(v, 25, 100, 80)
-			if options.Icons.SizePercent ~= newValue then
-				options.Icons.SizePercent = newValue
-				config:Apply()
-			end
-		end,
-	})
-
-	iconSizePct.Slider:SetPoint("TOPLEFT", iconSize.Slider, "TOPLEFT", 0, 0)
-
-	refreshSizeMode = function()
-		local isPercent = options.Icons.SizeIsPercent == true
-		iconSize.Slider:SetShown(not isPercent)
-		iconSize.Label:SetShown(not isPercent)
-		iconSize.EditBox:SetShown(not isPercent)
-		iconSizePct.Slider:SetShown(isPercent)
-		iconSizePct.Label:SetShown(isPercent)
-		iconSizePct.EditBox:SetShown(isPercent)
-	end
-	refreshSizeMode()
-
-	local maxIcons = mini:Slider({
-		Parent = parent,
-		Min = 1,
-		Max = 5,
-		Width = columnWidth * 2 - horizontalSpacing,
-		Step = 1,
-		LabelText = L["Max Icons"],
-		GetValue = function()
-			return options.Icons.Count or 5
-		end,
-		SetValue = function(v)
-			local newValue = mini:ClampInt(v, 1, 5, 3)
-			if options.Icons.Count ~= newValue then
-				options.Icons.Count = newValue
-				config:Apply()
-			end
-		end,
-	})
-
-	maxIcons.Slider:SetPoint("LEFT", iconSize.Slider, "RIGHT", horizontalSpacing, 0)
-
-	local iconSpacing = mini:Slider({
-		Parent = parent,
-		Min = 0,
-		Max = 20,
-		Width = columnWidth * 2 - horizontalSpacing,
-		Step = 1,
-		LabelText = L["Icon Padding"],
-		GetValue = function()
-			return options.IconSpacing or 2
-		end,
-		SetValue = function(v)
-			local newValue = mini:ClampInt(v, 0, 20, 2)
-			if options.IconSpacing ~= newValue then
-				options.IconSpacing = newValue
-				config:Apply()
-			end
-		end,
-	})
-
-	iconSpacing.Slider:SetPoint("TOPLEFT", iconSize.Slider, "BOTTOMLEFT", 0, -verticalSpacing * 2)
-
-	anchorPanel:SetPoint("TOPLEFT", iconSpacing.Slider, "BOTTOMLEFT", 0, -verticalSpacing * 2)
-	anchorPanel:SetPoint("TOPRIGHT", iconSpacing.Slider, "BOTTOMRIGHT", 0, -verticalSpacing * 2)
-
-	parent.OnMiniRefresh = function()
-		anchorPanel:MiniRefresh()
-	end
+	refreshSizeMode = BuildIconLayoutControls(parent, options, anchorPanel, showTooltipsChk, 32, 80, 5)
 
 	return parent
 end
@@ -508,109 +526,7 @@ local function BuildPetInstance(panel, options)
 
 	includePetFrameChk:SetPoint("TOPLEFT", glowChk, "BOTTOMLEFT", 0, -verticalSpacing)
 
-	local growDdl = BuildGrowDropdown(parent, options, includePetFrameChk)
-
-	local iconSize = mini:Slider({
-		Parent = parent,
-		Min = 10,
-		Max = 100,
-		Width = columnWidth * 2 - horizontalSpacing,
-		Step = 1,
-		LabelText = L["Icon Size"],
-		GetValue = function()
-			return options.Icons.Size
-		end,
-		SetValue = function(v)
-			local newValue = mini:ClampInt(v, 10, 100, 24)
-			if options.Icons.Size ~= newValue then
-				options.Icons.Size = newValue
-				config:Apply()
-			end
-		end,
-	})
-
-	iconSize.Slider:SetPoint("TOPLEFT", growDdl, "BOTTOMLEFT", 0, -verticalSpacing * 3)
-
-	local iconSizePct = mini:Slider({
-		Parent = parent,
-		Min = 25,
-		Max = 100,
-		Width = columnWidth * 2 - horizontalSpacing,
-		Step = 1,
-		LabelText = L["Icon Size (%)"],
-		GetValue = function()
-			return options.Icons.SizePercent or 50
-		end,
-		SetValue = function(v)
-			local newValue = mini:ClampInt(v, 25, 100, 50)
-			if options.Icons.SizePercent ~= newValue then
-				options.Icons.SizePercent = newValue
-				config:Apply()
-			end
-		end,
-	})
-
-	iconSizePct.Slider:SetPoint("TOPLEFT", iconSize.Slider, "TOPLEFT", 0, 0)
-
-	refreshSizeMode = function()
-		local isPercent = options.Icons.SizeIsPercent == true
-		iconSize.Slider:SetShown(not isPercent)
-		iconSize.Label:SetShown(not isPercent)
-		iconSize.EditBox:SetShown(not isPercent)
-		iconSizePct.Slider:SetShown(isPercent)
-		iconSizePct.Label:SetShown(isPercent)
-		iconSizePct.EditBox:SetShown(isPercent)
-	end
-	refreshSizeMode()
-
-	local maxIcons = mini:Slider({
-		Parent = parent,
-		Min = 1,
-		Max = 5,
-		Width = columnWidth * 2 - horizontalSpacing,
-		Step = 1,
-		LabelText = L["Max Icons"],
-		GetValue = function()
-			return options.Icons.Count or 3
-		end,
-		SetValue = function(v)
-			local newValue = mini:ClampInt(v, 1, 5, 3)
-			if options.Icons.Count ~= newValue then
-				options.Icons.Count = newValue
-				config:Apply()
-			end
-		end,
-	})
-
-	maxIcons.Slider:SetPoint("LEFT", iconSize.Slider, "RIGHT", horizontalSpacing, 0)
-
-	local iconSpacing = mini:Slider({
-		Parent = parent,
-		Min = 0,
-		Max = 20,
-		Width = columnWidth * 2 - horizontalSpacing,
-		Step = 1,
-		LabelText = L["Icon Padding"],
-		GetValue = function()
-			return options.IconSpacing or 2
-		end,
-		SetValue = function(v)
-			local newValue = mini:ClampInt(v, 0, 20, 2)
-			if options.IconSpacing ~= newValue then
-				options.IconSpacing = newValue
-				config:Apply()
-			end
-		end,
-	})
-
-	iconSpacing.Slider:SetPoint("TOPLEFT", iconSize.Slider, "BOTTOMLEFT", 0, -verticalSpacing * 2)
-
-	anchorPanel:SetPoint("TOPLEFT", iconSpacing.Slider, "BOTTOMLEFT", 0, -verticalSpacing * 2)
-	anchorPanel:SetPoint("TOPRIGHT", iconSpacing.Slider, "BOTTOMRIGHT", 0, -verticalSpacing * 2)
-
-	parent.OnMiniRefresh = function()
-		anchorPanel:MiniRefresh()
-	end
+	refreshSizeMode = BuildIconLayoutControls(parent, options, anchorPanel, includePetFrameChk, 24, 50, 3)
 
 	return parent
 end

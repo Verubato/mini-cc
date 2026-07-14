@@ -295,6 +295,7 @@ end
 ---@field MediaLocation string
 ---@field Migrator DbMigrator
 ---@field TabController TabReturn
+---@field SharedBuilders ConfigSharedBuilders
 ---@field General GeneralConfig
 ---@field Portraits PortraitsConfig
 ---@field CrowdControl CrowdControlConfig
