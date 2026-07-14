@@ -2548,7 +2548,9 @@ end
 -- "Profiles", "ActiveProfile", and "AutoSwitch" are included here because CleanTable
 -- would otherwise wipe all stored profile snapshots (profile names are unknown keys
 -- relative to the dbDefaults.Profiles = {} template).
-local opaqueCacheKeys = { "SpecCache", "TalentCache", "PvPTalentCache", "WhatsNew", "NotifiedChanges", "Profiles", "ActiveProfile", "AutoSwitch" }
+-- "PendingScaleMigration26" is not a cache but must survive the final CleanTable:
+-- it is read by RunDeferredMigrations at PLAYER_LOGIN, after GetAndUpgradeDb ran.
+local opaqueCacheKeys = { "SpecCache", "TalentCache", "PvPTalentCache", "WhatsNew", "NotifiedChanges", "Profiles", "ActiveProfile", "AutoSwitch", "PendingScaleMigration26" }
 
 local function SaveOpaqueCaches(vars)
 	local saved = {}
