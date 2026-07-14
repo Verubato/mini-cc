@@ -100,7 +100,12 @@ L:SetDefaultStrings({
 	["Please enter a profile name."] = "Please enter a profile name.",
 
 	-- General tab
+	-- Glow Type display labels (the persisted value stays the English token).
+	["Proc Glow"] = "Proc Glow",
+	["Rotation Assist"] = "Rotation Assist",
+	["Pixel Glow"] = "Pixel Glow",
 	["Autocast Shine"] = "Autocast Shine",
+	["Slot Glow"] = "Slot Glow",
 	["Discord"] = "Discord",
 	["Export Profile"] = "Export Profile",
 	["Font Scale"] = "Font Scale",
@@ -191,7 +196,7 @@ L:SetDefaultStrings({
 	["Show defensive spell icons."] = "Show defensive spell icons.",
 	["Show interrupts"] = "Show interrupts",
 	["Show an icon when a friendly unit gets interrupted."] = "Show an icon when a friendly unit gets interrupted.",
-	["Shows CC and defensives as one set of icons on party/raid frames."] = "Shows CC and defensives as one set of icons on party/raid frames.",
+	["Shows CC and defensive auras as one set of icons on party/raid frames."] = "Shows CC and defensive auras as one set of icons on party/raid frames.",
 	["Tip: Disable the CC module for BGs and enable CC within this module."] = "Tip: Disable the CC module for BGs and enable CC within this module.",
 
 	-- Healer tab
@@ -230,7 +235,7 @@ L:SetDefaultStrings({
 	["Portraits"] = "Portraits",
 	["Portraits_Short"] = "Portraits",
 	["Reverses the direction of the cooldown swipe."] = "Reverses the direction of the cooldown swipe.",
-	["Shows CC and defensives on the player/target/focus portraits."] = "Shows CC and defensives on the player/target/focus portraits.",
+	["Shows CC, defensives, and other important spells on the player/target/focus portraits."] = "Shows CC, defensives, and other important spells on the player/target/focus portraits.",
 
 	-- Party Trinkets tab
 	[" - Doesn't work if your team mates trinket in the starting room."] = " - Doesn't work if your team mates trinket in the starting room.",
@@ -266,14 +271,13 @@ L:SetDefaultStrings({
 	-- Enemy Cooldown Tracker tab
 	["Enemy Cooldowns"] = "Enemy Cooldowns",
 	["Enemy Cooldowns_Short"] = "Enemy CDs",
-	["Shows enemy arena opponent defensive and offensive cooldowns after their buffs expire."] = "Shows enemy arena opponent defensive and offensive cooldowns after their buffs expire.",
+	["Shows enemy arena opponent defensive cooldowns after their buffs expire."] = "Shows enemy arena opponent defensive cooldowns after their buffs expire.",
 	["Enable enemy cooldown tracking in arena."] = "Enable enemy cooldown tracking in arena.",
 	["Number of icon rows for the Linear Bar. Icons per row is determined by the Max Icons setting."] = "Number of icon rows for the Linear Bar. Icons per row is determined by the Max Icons setting.",
 	["Show spell tooltips when hovering over cooldown icons."] = "Show spell tooltips when hovering over cooldown icons.",
 	["Reverse the cooldown swipe animation direction on icons."] = "Reverse the cooldown swipe animation direction on icons.",
 	["The display size of each cooldown icon in pixels."] = "The display size of each cooldown icon in pixels.",
 	["The spacing in pixels between each cooldown icon."] = "The spacing in pixels between each cooldown icon.",
-	["Arena Frames: anchors icons next to each enemy's arena frame. Linear Bar: displays all cooldowns in a single combined bar. Split: shows offensive cooldowns on the linear bar and defensive cooldowns on the arena frames."] = "Arena Frames: anchors icons next to each enemy's arena frame. Linear Bar: displays all cooldowns in a single combined bar. Split: shows offensive cooldowns on the linear bar and defensive cooldowns on the arena frames.",
 	["The direction cooldown icons grow from the arena frame anchor point."] = "The direction cooldown icons grow from the arena frame anchor point.",
 	["Horizontal pixel offset from the arena frame anchor point."] = "Horizontal pixel offset from the arena frame anchor point.",
 	["Vertical pixel offset from the arena frame anchor point."] = "Vertical pixel offset from the arena frame anchor point.",
@@ -322,6 +326,50 @@ L:SetDefaultStrings({
 	["Override the addon language. By default, your game client language is used."] = "Override the addon language. By default, your game client language is used.",
 	["Auto (client language)"] = "Auto (client language)",
 	["Language changed. Reload UI now?"] = "Language changed. Reload UI now?",
+
+	-- Migration What's New entries (rendered in the What's New dialog)
+	[" - New spell alerts bar that shows enemy cooldowns."] = " - New spell alerts bar that shows enemy cooldowns.",
+	[" - New feature to show enemy cooldowns on nameplates."] = " - New feature to show enemy cooldowns on nameplates.",
+	[" - Separated CC and important spell positions on nameplates."] = " - Separated CC and important spell positions on nameplates.",
+	[" - New poor man's kick timer (don't get too excited, it's really basic)."] = " - New poor man's kick timer (don't get too excited, it's really basic).",
+	[" - Various bug fixes and performance improvements."] = " - Various bug fixes and performance improvements.",
+	[" - Added pet portrait CC icon."] = " - Added pet portrait CC icon.",
+	[" - Improved kick detection logic (can now detect who kicked you)."] = " - Improved kick detection logic (can now detect who kicked you).",
+	[" - Added party trinkets tracker."] = " - Added party trinkets tracker.",
+	[" - Added Shadowed Unit Frames and Plexus frames support."] = " - Added Shadowed Unit Frames and Plexus frames support.",
+	[" - Improved addon performance."] = " - Improved addon performance.",
+	[" - New ally CDs frame that shows active defensives and offensive cooldowns."] = " - New ally CDs frame that shows active defensives and offensive cooldowns.",
+	[" - Added option to color alert glows by enemy class color (enabled by default)."] = " - Added option to color alert glows by enemy class color (enabled by default).",
+	[" - Added important and defensive alert sound effects."] = " - Added important and defensive alert sound effects.",
+	[" - Added text to speech functionality in the alerts module (i.e. GladiatorlosSA)."] = " - Added text to speech functionality in the alerts module (i.e. GladiatorlosSA).",
+	["Cooldown debug logging ON"] = "Cooldown debug logging ON",
+	["Cooldown debug logging OFF"] = "Cooldown debug logging OFF",
+
+	-- Other Mini Addons card descriptions (routed via L[def.Desc] in Config/OtherAddons.lua)
+	["Sorts party/raid/arena frames and places you at the top/middle/bottom."] = "Sorts party/raid/arena frames and places you at the top/middle/bottom.",
+	["Shows markers above your team mates."] = "Shows markers above your team mates.",
+	["Shows overshields on frames and nameplates."] = "Shows overshields on frames and nameplates.",
+	["Basically doubles your APM."] = "Basically doubles your APM.",
+	["Shows your debuffs on enemy arena frames."] = "Shows your debuffs on enemy arena frames.",
+	["Plays sound effects when getting killing blows."] = "Plays sound effects when getting killing blows.",
+	["Shows fps and ping on a draggable UI element."] = "Shows fps and ping on a draggable UI element.",
+	["Shows a draggable timer on your UI when in queue."] = "Shows a draggable timer on your UI when in queue.",
+	["Changes your tab key to target enemy players."] = "Changes your tab key to target enemy players.",
+	["Notifies you when entering or leaving combat."] = "Notifies you when entering or leaving combat.",
+	["Simple personal resource-style health + power bar you can tweak."] = "Simple personal resource-style health + power bar you can tweak.",
+	["Fades out certain frames including bags, micro menu, and quest tracker."] = "Fades out certain frames including bags, micro menu, and quest tracker.",
+	["Customize the cooldown timers."] = "Customize the cooldown timers.",
+	["Powerful icon skinning tool."] = "Powerful icon skinning tool.",
+
+	-- Keys previously used in code but missing from the defaults, which made them
+	-- untranslatable until they were listed here.
+	["A separate region for showing enemy defensive spells."] = "A separate region for showing enemy defensive spells.",
+	["A settings migration failed and your settings were reset to defaults. The previous data is kept under MigrationBackup in the saved variables."] = "A settings migration failed and your settings were reset to defaults. The previous data is kept under MigrationBackup in the saved variables.",
+	["Arena Frames: anchors icons next to each enemy's arena frame. Linear Bar: displays all cooldowns in a single combined bar."] = "Arena Frames: anchors icons next to each enemy's arena frame. Linear Bar: displays all cooldowns in a single combined bar.",
+	["HEADS UP: Blizzard is making changes in patch 12.0.5 (April 21st) that will severely reduce the accuracy of friendly CD tracking, kill cooldown glow on press, and completely remove PvP enemy kick tracking. So please be aware that tracking will lose accuracy soon."] = "HEADS UP: Blizzard is making changes in patch 12.0.5 (April 21st) that will severely reduce the accuracy of friendly CD tracking, kill cooldown glow on press, and completely remove PvP enemy kick tracking. So please be aware that tracking will lose accuracy soon.",
+	["Important Notes"] = "Important Notes",
+	["Settings saved by a newer MiniCC version were reset to defaults. The previous data is kept under MigrationBackup in the saved variables."] = "Settings saved by a newer MiniCC version were reset to defaults. The previous data is kept under MigrationBackup in the saved variables.",
+	["With the new Blizzard restrictions in 12.0.5, this is what has changed in MiniCC.\n\nThe good news:\n* Cooldown tracking still works mostly fine in arena and dungeons.\n* Added support for multiple spell charges (e.g. 2x Pain Suppression, 2x Blur) for both friendly and enemy CDs.\n\nThe bad news:\n* Friendly externals no longer track in Raids and Battlegrounds.\n* Predictive glows are less reliable.\n* PvP kick tracking can no longer identify the kicker. Now just displays a generic icon using the shortest known enemy kick cooldown.\n\nWe've put a lot of work into this update, but there may still be issues. \nPlease report any bugs you find in our Discord so we can address them."] = "With the new Blizzard restrictions in 12.0.5, this is what has changed in MiniCC.\n\nThe good news:\n* Cooldown tracking still works mostly fine in arena and dungeons.\n* Added support for multiple spell charges (e.g. 2x Pain Suppression, 2x Blur) for both friendly and enemy CDs.\n\nThe bad news:\n* Friendly externals no longer track in Raids and Battlegrounds.\n* Predictive glows are less reliable.\n* PvP kick tracking can no longer identify the kicker. Now just displays a generic icon using the shortest known enemy kick cooldown.\n\nWe've put a lot of work into this update, but there may still be issues. \nPlease report any bugs you find in our Discord so we can address them.",
 })
 
 L:RegisterLocale("enUS", {})

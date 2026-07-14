@@ -933,7 +933,7 @@ function M:UpgradeToVersion9(vars)
 
 	vars.NotifiedChanges = false
 	vars.WhatsNew = vars.WhatsNew or {}
-	table.insert(vars.WhatsNew, " - New spell alerts bar that shows enemy cooldowns.")
+	table.insert(vars.WhatsNew, L[" - New spell alerts bar that shows enemy cooldowns."])
 	vars.Version = 9
 
 	return true
@@ -945,7 +945,7 @@ function M:UpgradeToVersion10(vars)
 	end
 
 	vars.WhatsNew = vars.WhatsNew or {}
-	table.insert(vars.WhatsNew, " - New feature to show enemy cooldowns on nameplates.")
+	table.insert(vars.WhatsNew, L[" - New feature to show enemy cooldowns on nameplates."])
 	vars.NotifiedChanges = false
 	vars.Version = 10
 
@@ -1185,7 +1185,7 @@ function M:UpgradeToVersion12(vars)
 		vars.Nameplates.Enemy.Important.Enabled = vars.Nameplates.EnemyEnabled
 	end
 
-	table.insert(vars.WhatsNew, " - Separated CC and important spell positions on nameplates.")
+	table.insert(vars.WhatsNew, L[" - Separated CC and important spell positions on nameplates."])
 	vars.NotifiedChanges = false
 
 	-- clean up old values
@@ -1200,8 +1200,8 @@ function M:UpgradeToVersion13(vars)
 		return false
 	end
 
-	table.insert(vars.WhatsNew, " - New poor man's kick timer (don't get too excited, it's really basic).")
-	table.insert(vars.WhatsNew, " - Various bug fixes and performance improvements.")
+	table.insert(vars.WhatsNew, L[" - New poor man's kick timer (don't get too excited, it's really basic)."])
+	table.insert(vars.WhatsNew, L[" - Various bug fixes and performance improvements."])
 	vars.NotifiedChanges = false
 	vars.Version = 13
 
@@ -1213,7 +1213,7 @@ function M:UpgradeToVersion14(vars)
 		return false
 	end
 
-	table.insert(vars.WhatsNew, " - Added pet portrait CC icon.")
+	table.insert(vars.WhatsNew, L[" - Added pet portrait CC icon."])
 	vars.NotifiedChanges = false
 	vars.Version = 14
 
@@ -1225,10 +1225,10 @@ function M:UpgradeToVersion15(vars)
 		return false
 	end
 
-	table.insert(vars.WhatsNew, " - Improved kick detection logic (can now detect who kicked you).")
-	table.insert(vars.WhatsNew, " - Added party trinkets tracker.")
-	table.insert(vars.WhatsNew, " - Added Shadowed Unit Frames and Plexus frames support.")
-	table.insert(vars.WhatsNew, " - Improved addon performance.")
+	table.insert(vars.WhatsNew, L[" - Improved kick detection logic (can now detect who kicked you)."])
+	table.insert(vars.WhatsNew, L[" - Added party trinkets tracker."])
+	table.insert(vars.WhatsNew, L[" - Added Shadowed Unit Frames and Plexus frames support."])
+	table.insert(vars.WhatsNew, L[" - Improved addon performance."])
 	vars.NotifiedChanges = false
 	vars.Version = 15
 
@@ -1240,7 +1240,7 @@ function M:UpgradeToVersion16(vars)
 		return false
 	end
 
-	table.insert(vars.WhatsNew, " - New ally CDs frame that shows active defensives and offensive cooldowns.")
+	table.insert(vars.WhatsNew, L[" - New ally CDs frame that shows active defensives and offensive cooldowns."])
 	vars.NotifiedChanges = false
 	vars.Version = 16
 
@@ -1252,7 +1252,7 @@ function M:UpgradeToVersion17(vars)
 		return false
 	end
 
-	table.insert(vars.WhatsNew, " - Added option to color alert glows by enemy class color (enabled by default).")
+	table.insert(vars.WhatsNew, L[" - Added option to color alert glows by enemy class color (enabled by default)."])
 	vars.NotifiedChanges = false
 	vars.Version = 17
 
@@ -1824,8 +1824,8 @@ function M:UpgradeToVersion23(vars)
 	-- nameplate CC/Combined sections for v49). The final CleanTable in
 	-- GetAndUpgradeDb handles leftover garbage once the chain is complete.
 
-	table.insert(vars.WhatsNew, " - Added important and defensive alert sound effects.")
-	table.insert(vars.WhatsNew, " - Added text to speech functionality in the alerts module (i.e. GladiatorlosSA).")
+	table.insert(vars.WhatsNew, L[" - Added important and defensive alert sound effects."])
+	table.insert(vars.WhatsNew, L[" - Added text to speech functionality in the alerts module (i.e. GladiatorlosSA)."])
 
 	vars.NotifiedChanges = false
 	vars.Version = 23
