@@ -2728,5 +2728,10 @@ function M:SoftReset()
 	mini:CleanTable(vars, dbDefaults, true, true)
 	RestoreOpaqueCaches(vars, caches)
 
+	-- The reset produces a table shaped like the current schema, so it must carry the
+	-- current Version. Keeping a higher (downgraded-from) Version would re-trigger this
+	-- reset every load and skip the intermediate migrations once the addon is updated.
+	vars.Version = dbDefaults.Version
+
 	return vars
 end
