@@ -449,9 +449,13 @@ function M:Build(panel)
 						return profileManager:GetAutoSwitchRule(capturedSpecId) or noneLabel
 					end,
 					SetValue = function(value)
-						profileManager:SetAutoSwitchRule(
-							capturedSpecId,
-							value == noneLabel and nil or value)
+						-- Explicit branch: `value == noneLabel and nil or value`
+						-- collapses to `value`, so "(none)" never cleared the rule.
+						if value == noneLabel then
+							profileManager:SetAutoSwitchRule(capturedSpecId, nil)
+						else
+							profileManager:SetAutoSwitchRule(capturedSpecId, value)
+						end
 					end,
 				})
 				dd:SetWidth(160)
