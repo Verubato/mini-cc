@@ -38,6 +38,21 @@ local talentCallbackFiredForSpecChange = false
 local predictedCallbacks = {}
 local matchedCallbacks = {}
 
+---Notifies external API subscribers of a committed cooldown. Shared by the
+---generic Brain commit path and the special Burrow / Emerald Communion commits
+---so every committed cooldown reaches MiniCCApi.v1 consumers.
+local function NotifyMatchedCallbacks(unit, spellId)
+	if not next(matchedCallbacks) then
+		return
+	end
+	local spellType = rules.GetSpellType(spellId)
+	for _, fn in ipairs(matchedCallbacks) do
+		-- xpcall so one failing external subscriber cannot abort the UNIT_AURA
+		-- processing chain; securecallfunction preserved for taint isolation.
+		xpcall(securecallfunction, geterrorhandler(), fn, unit, spellId, spellType)
+	end
+end
+
 ---Shows or hides an entry's container frame, suppressing display while edit mode is active.
 local function ShowHideEntryContainer(frame, anchor)
 	if editModeActive then
@@ -344,6 +359,9 @@ function M:Init()
 			display:UpdateDisplay(e)
 			ShowHideEntryContainer(e.Container.Frame, e.Anchor)
 		end
+
+		-- Notify external API subscribers (contract: fires for every committed cooldown).
+		NotifyMatchedCallbacks(unit, spellId)
 	end)
 
 	-- Emerald Communion commit: channel ended — clear glow and commit CD with accurate remaining time.
@@ -396,6 +414,9 @@ function M:Init()
 			display:UpdateDisplay(e)
 			ShowHideEntryContainer(e.Container.Frame, e.Anchor)
 		end
+
+		-- Notify external API subscribers (contract: fires for every committed cooldown).
+		NotifyMatchedCallbacks(unit, spellId)
 	end)
 
 	-- Provide Brain with a way to look up a unit's active cooldowns so PredictSpellIdForUnit
@@ -550,15 +571,9 @@ function M:Init()
 		end
 
 		-- Notify external API subscribers.
-		if next(matchedCallbacks) then
-			local unit = casterEntries[1] and casterEntries[1].Unit or detectedFromEntry.Unit
-			local spellType = rules.GetSpellType(cdData.SpellId)
-			for _, fn in ipairs(matchedCallbacks) do
-				-- xpcall so one failing external subscriber cannot abort the UNIT_AURA
-				-- processing chain; securecallfunction preserved for taint isolation.
-				xpcall(securecallfunction, geterrorhandler(), fn, unit, cdData.SpellId, spellType)
-			end
-		end
+		NotifyMatchedCallbacks(
+			casterEntries[1] and casterEntries[1].Unit or detectedFromEntry.Unit,
+			cdData.SpellId)
 	end)
 
 	-- After each watcher update, refresh the detected entry's display.
