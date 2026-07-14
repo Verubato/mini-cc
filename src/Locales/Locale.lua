@@ -51,7 +51,11 @@ end
 function L:GetAvailableLocales()
 	local result = {}
 	for key in pairs(registry) do
-		table.insert(result, { Key = key, Name = localeDisplayNames[key] or key })
+		-- enGB is an alias of enUS (identical strings and display name); listing
+		-- both would put two indistinguishable "English" entries in the dropdown.
+		if key ~= "enGB" then
+			table.insert(result, { Key = key, Name = localeDisplayNames[key] or key })
+		end
 	end
 	table.sort(result, function(a, b)
 		return a.Name < b.Name
