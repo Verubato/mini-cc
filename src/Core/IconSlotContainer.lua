@@ -162,7 +162,11 @@ local function EnsureExtraLayer(slot, layerIndex, iconSize)
 end
 
 local function ApplyAlpha(target, alpha)
-	if type(alpha) == "number" then
+	-- Alpha is documented optional; omitted means fully opaque rather than
+	-- whatever SetAlphaFromBoolean(nil) would do.
+	if alpha == nil then
+		target:SetAlpha(1)
+	elseif type(alpha) == "number" then
 		target:SetAlpha(alpha)
 	else
 		target:SetAlphaFromBoolean(alpha)
