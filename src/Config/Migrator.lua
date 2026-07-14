@@ -1411,7 +1411,9 @@ function M:UpgradeToVersion18(vars)
 		WhatsNew = {},
 		NotifiedChanges = true,
 		Modules = {
-			CcModule = {
+			-- Casing must match what this migration writes above (CCModule /
+			-- HealerCCModule); CleanTable deletes any key absent from this template.
+			CCModule = {
 				Enabled = {
 					Always = true,
 					Arena = false,
@@ -1476,7 +1478,7 @@ function M:UpgradeToVersion18(vars)
 					},
 				},
 			},
-			HealerCcModule = {
+			HealerCCModule = {
 				Enabled = {
 					Always = true,
 					Arena = false,
