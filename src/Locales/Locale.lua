@@ -5,7 +5,6 @@ local _, addon = ...
 local L = {}
 addon.L = L
 
-local locale = GetLocale()
 local strings = {}
 
 -- Default locale (English)
@@ -37,7 +36,6 @@ end
 -- Apply a registered locale as the active strings
 function L:ApplyLocale(localeKey)
 	wipe(strings)
-	locale = localeKey
 
 	local registered = registry[localeKey]
 	if registered then
@@ -63,18 +61,6 @@ function L:GetAvailableLocales()
 	return result
 end
 
--- Set a localized string
-function L:SetString(key, value)
-	strings[key] = value
-end
-
--- Set multiple localized strings at once
-function L:SetStrings(stringTable)
-	for key, value in pairs(stringTable) do
-		strings[key] = value
-	end
-end
-
 -- Set default strings (English)
 function L:SetDefaultStrings(stringTable)
 	for key, value in pairs(stringTable) do
@@ -82,12 +68,8 @@ function L:SetDefaultStrings(stringTable)
 	end
 end
 
--- Get a localized string, falling back to English if not found
-function L:Get(key)
-	return strings[key] or defaultStrings[key] or key
-end
-
--- Convenience metatable for easier access: L["key"] instead of L:Get("key")
+-- Convenience metatable: L["key"] returns the localized string, falling back to
+-- English and then to the key itself.
 setmetatable(L, {
 	__index = function(t, key)
 		if type(key) == "string" then
@@ -96,11 +78,6 @@ setmetatable(L, {
 		return rawget(t, key)
 	end,
 })
-
--- Return current locale
-function L:GetLocale()
-	return locale
-end
 
 function L:GetDisplayName(localeKey)
 	return localeDisplayNames[localeKey] or localeKey
