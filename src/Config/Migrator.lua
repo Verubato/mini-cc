@@ -2566,7 +2566,21 @@ end
 -- relative to the dbDefaults.Profiles = {} template).
 -- "PendingScaleMigration26" is not a cache but must survive the final CleanTable:
 -- it is read by RunDeferredMigrations at PLAYER_LOGIN, after GetAndUpgradeDb ran.
-local opaqueCacheKeys = { "SpecCache", "TalentCache", "PvPTalentCache", "WhatsNew", "NotifiedChanges", "Profiles", "ActiveProfile", "AutoSwitch", "PendingScaleMigration26" }
+-- "MigrationBackup" holds the pre-reset settings snapshot after a failed migration
+-- (or downgrade) so the data stays recoverable; cleared on the next successful chain.
+local opaqueCacheKeys = { "SpecCache", "TalentCache", "PvPTalentCache", "WhatsNew", "NotifiedChanges", "Profiles", "ActiveProfile", "AutoSwitch", "PendingScaleMigration26", "MigrationBackup" }
+
+-- Deep-copies the saved variables for the MigrationBackup slot, skipping any
+-- previous backup so backups never nest.
+local function BackupTable(vars)
+	local backup = {}
+	for k, v in pairs(vars) do
+		if k ~= "MigrationBackup" then
+			backup[k] = mini:CopyValueOrTable(v)
+		end
+	end
+	return backup
+end
 
 local function SaveOpaqueCaches(vars)
 	local saved = {}
@@ -2663,12 +2677,24 @@ function M:GetAndUpgradeDb()
 	local vars = mini:GetSavedVars()
 
 	if vars.Version and vars.Version > dbDefaults.Version then
-		-- they are running some version ahead of us, let's reset to factory
-		return M:SoftReset()
+		-- they are running some version ahead of us, let's reset to factory,
+		-- keeping the newer-schema data recoverable and telling the user
+		local backup = BackupTable(vars)
+		local reset = M:SoftReset()
+		reset.MigrationBackup = backup
+		mini:Notify(L["Settings saved by a newer MiniCC version were reset to defaults. The previous data is kept under MigrationBackup in the saved variables."])
+		return reset
 	end
 
 	local preUpgradeVersion = vars.Version or 0
 	local isCorrupt = false
+
+	-- Snapshot before running migrations: a defective step would otherwise convert
+	-- into a silent near-factory reset with no way to recover the old settings.
+	local preUpgradeBackup = nil
+	if preUpgradeVersion < dbDefaults.Version then
+		preUpgradeBackup = BackupTable(vars)
+	end
 
 	while (vars.Version or 0) < dbDefaults.Version do
 		local currentVersion = vars.Version or 0
@@ -2690,7 +2716,16 @@ function M:GetAndUpgradeDb()
 	end
 
 	if isCorrupt then
-		return M:SoftReset()
+		local reset = M:SoftReset()
+		reset.MigrationBackup = preUpgradeBackup
+		mini:Notify(L["A settings migration failed and your settings were reset to defaults. The previous data is kept under MigrationBackup in the saved variables."])
+		return reset
+	end
+
+	-- The chain succeeded, so the pre-upgrade snapshot (and any backup retained
+	-- from an earlier failed upgrade) is no longer needed.
+	if preUpgradeBackup ~= nil then
+		vars.MigrationBackup = nil
 	end
 
 	-- Bring stored profile snapshots up to the schema the live table now has.
