@@ -322,6 +322,19 @@ L:SetDefaultStrings({
 	["Override the addon language. By default, your game client language is used."] = "Override the addon language. By default, your game client language is used.",
 	["Auto (client language)"] = "Auto (client language)",
 	["Language changed. Reload UI now?"] = "Language changed. Reload UI now?",
+
+	-- Keys previously used in code but missing from the defaults, which made them
+	-- untranslatable until they were listed here.
+	["A separate region for showing enemy defensive spells."] = "A separate region for showing enemy defensive spells.",
+	["A settings migration failed and your settings were reset to defaults. The previous data is kept under MigrationBackup in the saved variables."] = "A settings migration failed and your settings were reset to defaults. The previous data is kept under MigrationBackup in the saved variables.",
+	["Arena Frames: anchors icons next to each enemy's arena frame. Linear Bar: displays all cooldowns in a single combined bar."] = "Arena Frames: anchors icons next to each enemy's arena frame. Linear Bar: displays all cooldowns in a single combined bar.",
+	["HEADS UP: Blizzard is making changes in patch 12.0.5 (April 21st) that will severely reduce the accuracy of friendly CD tracking, kill cooldown glow on press, and completely remove PvP enemy kick tracking. So please be aware that tracking will lose accuracy soon."] = "HEADS UP: Blizzard is making changes in patch 12.0.5 (April 21st) that will severely reduce the accuracy of friendly CD tracking, kill cooldown glow on press, and completely remove PvP enemy kick tracking. So please be aware that tracking will lose accuracy soon.",
+	["Important Notes"] = "Important Notes",
+	["Settings saved by a newer MiniCC version were reset to defaults. The previous data is kept under MigrationBackup in the saved variables."] = "Settings saved by a newer MiniCC version were reset to defaults. The previous data is kept under MigrationBackup in the saved variables.",
+	["Shows CC and defensive auras as one set of icons on party/raid frames."] = "Shows CC and defensive auras as one set of icons on party/raid frames.",
+	["Shows CC, defensives, and other important spells on the player/target/focus portraits."] = "Shows CC, defensives, and other important spells on the player/target/focus portraits.",
+	["Shows enemy arena opponent defensive cooldowns after their buffs expire."] = "Shows enemy arena opponent defensive cooldowns after their buffs expire.",
+	["With the new Blizzard restrictions in 12.0.5, this is what has changed in MiniCC.\n\nThe good news:\n* Cooldown tracking still works mostly fine in arena and dungeons.\n* Added support for multiple spell charges (e.g. 2x Pain Suppression, 2x Blur) for both friendly and enemy CDs.\n\nThe bad news:\n* Friendly externals no longer track in Raids and Battlegrounds.\n* Predictive glows are less reliable.\n* PvP kick tracking can no longer identify the kicker. Now just displays a generic icon using the shortest known enemy kick cooldown.\n\nWe've put a lot of work into this update, but there may still be issues. \nPlease report any bugs you find in our Discord so we can address them."] = "With the new Blizzard restrictions in 12.0.5, this is what has changed in MiniCC.\n\nThe good news:\n* Cooldown tracking still works mostly fine in arena and dungeons.\n* Added support for multiple spell charges (e.g. 2x Pain Suppression, 2x Blur) for both friendly and enemy CDs.\n\nThe bad news:\n* Friendly externals no longer track in Raids and Battlegrounds.\n* Predictive glows are less reliable.\n* PvP kick tracking can no longer identify the kicker. Now just displays a generic icon using the shortest known enemy kick cooldown.\n\nWe've put a lot of work into this update, but there may still be issues. \nPlease report any bugs you find in our Discord so we can address them.",
 })
 
 L:RegisterLocale("enUS", {})
