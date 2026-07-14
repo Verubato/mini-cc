@@ -907,6 +907,9 @@ local function ApplyBlizzardNameplateSettings(moduleEnabled)
 		and (nmModule.Friendly.Bar1.Enabled or nmModule.Friendly.Bar2.Enabled)
 
 	local function applyBit(cvar, bit, backupKey, wantCleared)
+		if db.NameplateCVarBackup ~= nil and type(db.NameplateCVarBackup) ~= "table" then
+			db.NameplateCVarBackup = nil
+		end
 		local current = C_CVar.GetCVarBitfield(cvar, bit) and true or false
 		if wantCleared then
 			if current then
