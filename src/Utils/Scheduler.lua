@@ -33,8 +33,8 @@ local function OnEvent(_, event)
 end
 
 ---Invokes the callback once combat ends.
----@param key string? an optional key which will ensure only the latest callback provided with the same key will be executed.
 ---@param callback fun()
+---@param key string? an optional key which will ensure only the latest callback provided with the same key will be executed.
 function M:RunWhenCombatEnds(callback, key)
 	if not callback then
 		return
@@ -56,5 +56,4 @@ function M:Init()
 	eventsFrame = CreateFrame("Frame")
 	eventsFrame:SetScript("OnEvent", OnEvent)
 	eventsFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-	eventsFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 end
