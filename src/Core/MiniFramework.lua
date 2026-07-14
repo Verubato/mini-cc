@@ -125,10 +125,17 @@ local function GetOrCreateDialog()
 	return dialog
 end
 
-local function NilKeys(target)
+local function NilKeys(target, seen)
+	-- Cycle guard: hand-edited SavedVariables can contain self-referencing
+	-- tables, which would otherwise recurse forever.
+	seen = seen or {}
+	if seen[target] then
+		return
+	end
+	seen[target] = true
 	for k, v in pairs(target) do
 		if type(v) == "table" then
-			NilKeys(v)
+			NilKeys(v, seen)
 		else
 			target[k] = nil
 		end
@@ -144,14 +151,23 @@ function M:NotifyCombatLockdown()
 	M:Notify(L["Can't do that during combat."])
 end
 
-function M:CopyTable(src, dst)
+function M:CopyTable(src, dst, seen)
 	if type(dst) ~= "table" then
 		dst = {}
 	end
 
+	-- Cycle guard: map each visited source table to its copy so self-referencing
+	-- tables (possible via hand-edited SavedVariables) terminate and the copy
+	-- preserves the reference structure.
+	seen = seen or {}
+	if seen[src] then
+		return seen[src]
+	end
+	seen[src] = dst
+
 	for k, v in pairs(src) do
 		if type(v) == "table" then
-			dst[k] = M:CopyTable(v, dst[k])
+			dst[k] = M:CopyTable(v, dst[k], seen)
 		elseif dst[k] == nil then
 			dst[k] = v
 		end

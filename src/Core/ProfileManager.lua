@@ -24,11 +24,17 @@ M.PayloadKeys = {
 local onProfileChangedCallbacks = {}
 local db
 
-local function DeepCopy(src)
+-- Both recursions carry a cycle guard: profile payloads live in user-editable
+-- SavedVariables, and a self-referencing table would otherwise overflow the
+-- stack at save/switch time.
+local function DeepCopy(src, seen)
 	if type(src) ~= "table" then return src end
+	seen = seen or {}
+	if seen[src] then return seen[src] end
 	local t = {}
+	seen[src] = t
 	for k, v in pairs(src) do
-		t[k] = DeepCopy(v)
+		t[k] = DeepCopy(v, seen)
 	end
 	return t
 end
@@ -36,7 +42,10 @@ end
 -- Mutates `target` in-place so its contents match `source`.
 -- Preserves existing table identities so upvalue references captured in
 -- Config UI closures (e.g. options.Offset.X) remain valid after a switch.
-local function MutateTableInPlace(target, source)
+local function MutateTableInPlace(target, source, seen)
+	seen = seen or {}
+	if seen[source] then return end
+	seen[source] = true
 	for k in pairs(target) do
 		if source[k] == nil then
 			target[k] = nil
@@ -44,7 +53,7 @@ local function MutateTableInPlace(target, source)
 	end
 	for k, v in pairs(source) do
 		if type(v) == "table" and type(target[k]) == "table" then
-			MutateTableInPlace(target[k], v)
+			MutateTableInPlace(target[k], v, seen)
 		else
 			target[k] = DeepCopy(v)
 		end
