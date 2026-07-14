@@ -230,7 +230,7 @@ L:RegisterLocale("esMX", {
 
 	-- Party Trinkets tab
 	[" - Doesn't work if your team mates trinket in the starting room."] = " - No funciona si tus compañeros de equipo usan abalorios en la sala de inicio.",
-	[" - Only works inside arena."] = " - Solo funciona dentro del arena.",
+	[" - Only works inside arena."] = " - Solo funciona dentro de la arena.",
 	["Party Trinkets"] = "Abalorios del grupo",
 	["Party Trinkets_Short"] = "Abalorios",
 

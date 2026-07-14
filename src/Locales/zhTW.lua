@@ -4,7 +4,7 @@ local L = addon.L
 
 L:RegisterLocale("zhTW", {
 	["Some good news:\n- A workaround has been implemented to show important auras again for nameplates/portraits/alerts."] = "好消息：\n- 已實作一種變通方法，可在名條/頭像/警報上再次顯示重要光環。",
-	["Show important spells on a separate, movable bar instead of combined with the defensive alerts."] = "在獨立、可移動的名條上顯示重要法術，而不是與防禦警報合併。",
+	["Show important spells on a separate, movable bar instead of combined with the defensive alerts."] = "在獨立的可移動條上顯示重要法術，而不是與防禦警報合併。",
 	["Show important enemy spells (e.g. offensive cooldowns, precognition) read from nameplates."] = "顯示從名條讀取的敵方重要法術（例如進攻冷卻、預知）。",
 	["Important"] = "重要",
 	["Important Spells"] = "重要法術",
@@ -136,7 +136,7 @@ L:RegisterLocale("zhTW", {
 	["Defensive Spells"] = "防禦法術",
 	["Includes defensives in the alerts."] = "在警報中包括防禦技能。",
 	["Play a sound when a defensive spell is pressed."] = "使用防禦法術時播放聲音。",
-	["Show alert icons in the alerts region."] = "在警報區域顯示警報圖示.",
+	["Show alert icons in the alerts region."] = "在警報區域顯示警報圖示。",
 	["Show CC icons when healer is CC'd."] = "治療者被控制時顯示CC圖示。",
 	["Show defensive alerts on a separate, movable bar."] = "在獨立的可移動條上顯示防禦警報。",
 	["Show icons"] = "顯示圖示",
