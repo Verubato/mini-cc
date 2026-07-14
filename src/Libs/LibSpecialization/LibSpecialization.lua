@@ -4,19 +4,29 @@ local cataWowID = 14
 local mistsWowID = 19
 if wowID ~= 1 and wowID ~= cataWowID and wowID ~= mistsWowID then return end -- Retail, Cata, Mists
 
+-- If another addon already supplied this revision (or a newer one), it owns the
+-- prefix registration and initialization. Do not make MiniCC fail just because
+-- the client prefix table filled after that healthy copy loaded.
+local existing, existingMinor = LibStub:GetLibrary("LibSpecialization", true)
+if existing and existingMinor >= 26 then return end
+
 do
 	-- Register the comm prefix BEFORE touching LibStub: if this errors it must
 	-- abort the file without leaving a half-initialized library registered in
 	-- LibStub (which would block healthy copies and nil-call consumers).
 	local result = C_ChatInfo.RegisterAddonMessagePrefix("LibSpec")
-	-- 0=success, 1=duplicate, 2=invalid, 3=toomany
-	if type(result) == "number" and result > 1 then
+	-- Retail returns a boolean. Retain the legacy numeric convention for older
+	-- clients supported by this library (0=success, 1=duplicate).
+	local succeeded = result == true
+		or (type(result) == "number" and result <= 1)
+	if not succeeded then
 		error("LibSpecialization: Failed to register the addon prefix.")
 	end
 end
 
 -- Locally patched (prefix registration moved above the LibStub registration);
--- minor bumped above upstream 25 so this fixed copy wins the LibStub race.
+-- minor bumped above the bundled upstream 25. Newer upstream copies can still
+-- supersede this revision normally.
 local LS, oldminor = LibStub:NewLibrary("LibSpecialization", 26)
 if not LS then return end -- No upgrade needed
 
