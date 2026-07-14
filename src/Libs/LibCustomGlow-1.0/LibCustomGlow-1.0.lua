@@ -6,7 +6,10 @@ https://www.wowace.com/projects/libbuttonglow-1-0
 -- luacheck: globals CreateFromMixins ObjectPoolMixin CreateTexturePool CreateFramePool
 
 local MAJOR_VERSION = "LibCustomGlow-1.0"
-local MINOR_VERSION = 24
+-- Locally patched (Color-object/secret-value support completed across ButtonGlow,
+-- ProcGlow, and the anim handlers); minor bumped above upstream 24 so a stock
+-- copy shipped by another addon cannot win the LibStub race and drop the patch.
+local MINOR_VERSION = 25
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub.") end
 local lib, oldversion = LibStub:NewLibrary(MAJOR_VERSION, MINOR_VERSION)
 if not lib then return end
@@ -166,6 +169,21 @@ local function addFrameAndTex(r,color,name,key,N,xOffset,yOffset,texture,texCoor
 end
 
 
+-- Normalizes a color argument to a plain {r,g,b,a} array so every downstream
+-- numeric index (color[1]..color[4], frame.color[4] in the anim handlers) works.
+-- Accepts Color objects (WoW 12.0 secret-value support) via GetRGBA, and 3- or
+-- 4-element arrays (alpha defaults to 1). Returns nil for nil.
+local function NormalizeColor(color)
+    if color == nil then
+        return nil
+    end
+    if type(color) == "table" and color.GetRGBA then
+        local r, g, b, a = color:GetRGBA()
+        return {r, g, b, a or 1}
+    end
+    return {color[1], color[2], color[3], color[4] or 1}
+end
+
 --Pixel Glow Functions--
 local pCalc1 = function(progress,s,th,p)
     local c
@@ -264,6 +282,7 @@ function lib.PixelGlow_Start(r,color,N,frequency,length,th,xOffset,yOffset,borde
     if not color then
         color = {0.95,0.95,0.32,1}
     end
+    color = NormalizeColor(color)
 
     if not(N and N>0) then
         N = 8
@@ -404,6 +423,7 @@ function lib.AutoCastGlow_Start(r,color,N,frequency,scale,xOffset,yOffset,key,fr
     if not color then
         color = {0.95,0.95,0.32,1}
     end
+    color = NormalizeColor(color)
 
     if not(N and N>0) then
         N = 4
@@ -658,6 +678,7 @@ function lib.ButtonGlow_Start(r,color,frequency,frameLevel)
     if not r then
         return
     end
+    color = NormalizeColor(color)
 	frameLevel = frameLevel or 8;
     local throttle
     if frequency and frequency > 0 then
@@ -918,6 +939,9 @@ function lib.ProcGlow_Start(r, options)
     end
     options = options or {}
     setmetatable(options, { __index = ProcGlowDefaults })
+    if options.color then
+        options.color = NormalizeColor(options.color)
+    end
     local key = "_ProcGlow" .. options.key
     local f, new
     if r[key] then
