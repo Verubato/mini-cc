@@ -9,16 +9,21 @@ local combatEndCallbacks = {}
 local combatEndKeyedCallbacks = {}
 
 local function OnCombatEnded()
-	for _, callback in ipairs(combatEndCallbacks) do
-		callback()
+	-- Swap the queues into locals and reset the module tables before iterating:
+	-- an error mid-loop must not leave already-run callbacks queued for replay on
+	-- the next combat end, and callbacks that re-schedule work need a fresh queue.
+	local callbacks = combatEndCallbacks
+	local keyedCallbacks = combatEndKeyedCallbacks
+	combatEndCallbacks = {}
+	combatEndKeyedCallbacks = {}
+
+	for _, callback in ipairs(callbacks) do
+		xpcall(callback, geterrorhandler())
 	end
 
-	for _, callback in pairs(combatEndKeyedCallbacks) do
-		callback()
+	for _, callback in pairs(keyedCallbacks) do
+		xpcall(callback, geterrorhandler())
 	end
-
-	wipe(combatEndCallbacks)
-	wipe(combatEndKeyedCallbacks)
 end
 
 local function OnEvent(_, event)
