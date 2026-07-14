@@ -674,12 +674,24 @@ end
 ---                                         the provider invokes when its frames change
 ---@param provider table
 function M:RegisterProvider(provider)
-	if type(provider) ~= "table" then return end
-	if type(provider.Name) ~= "string" or provider.Name == "" then return end
-	if type(provider.GetFrames) ~= "function" then return end
+	-- Rejections are surfaced: silently dropping a provider contradicts the
+	-- documented contract that registered providers contribute frames.
+	if type(provider) ~= "table" then
+		mini:Notify("RegisterFrameProvider rejected: provider must be a table.")
+		return
+	end
+	if type(provider.Name) ~= "string" or provider.Name == "" then
+		mini:Notify("RegisterFrameProvider rejected: provider.Name must be a non-empty string.")
+		return
+	end
+	if type(provider.GetFrames) ~= "function" then
+		mini:Notify("RegisterFrameProvider rejected ('%s'): provider.GetFrames must be a function.", provider.Name)
+		return
+	end
 
 	for _, existing in ipairs(externalProviders) do
 		if existing.Name == provider.Name then
+			mini:Notify("RegisterFrameProvider rejected: a provider named '%s' is already registered.", provider.Name)
 			return
 		end
 	end

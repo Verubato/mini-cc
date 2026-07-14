@@ -46,6 +46,9 @@ end
 ---Registers an external frame provider. Frames returned by `GetFrames()` are
 ---included alongside MiniCC's built-in frame sources (ElvUI, Cell, Blizzard, etc.)
 ---and receive the same icon/cooldown/glow treatment.
+---The provider must carry a unique non-empty `Name` and a `GetFrames` function;
+---registrations that fail validation (or reuse a Name) are rejected with a chat
+---notification.
 ---@param provider MiniCCFrameProvider
 function v1:RegisterFrameProvider(provider)
 	framesCore:RegisterProvider(provider)
