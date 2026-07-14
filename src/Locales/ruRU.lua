@@ -200,6 +200,7 @@ L:RegisterLocale("ruRU", {
 	["Text Size"] = "Размер текста",
 
 	-- Kick Timer tab
+	["As of 12.0.5, the caster of an interrupt can no longer be identified. This module now just displays a generic icon using the shortest known enemy kick cooldown."] = "Начиная с 12.0.5 больше нельзя определить, кто применил прерывание. Теперь этот модуль просто показывает универсальную иконку по самой короткой известной перезарядке прерывания противника.",
 	["Kick timer"] = "Таймер прерывания",
 	["Kick timer_Short"] = "Прерыв.",
 

@@ -200,6 +200,7 @@ L:RegisterLocale("esMX", {
 	["Text Size"] = "Tamaño de texto",
 
 	-- Kick Timer tab
+	["As of 12.0.5, the caster of an interrupt can no longer be identified. This module now just displays a generic icon using the shortest known enemy kick cooldown."] = "A partir del parche 12.0.5, ya no se puede identificar quién lanza una interrupción. Este módulo ahora solo muestra un ícono genérico basado en el tiempo de reutilización de interrupción enemigo más corto conocido.",
 	["Kick timer"] = "Temporizador de interrupción",
 	["Kick timer_Short"] = "Interrup.",
 

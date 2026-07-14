@@ -200,6 +200,7 @@ L:RegisterLocale("zhTW", {
 	["Text Size"] = "文字大小",
 
 	-- Kick Timer tab
+	["As of 12.0.5, the caster of an interrupt can no longer be identified. This module now just displays a generic icon using the shortest known enemy kick cooldown."] = "自12.0.5起，已無法識別打斷的施放者。此模組現在只會根據已知最短的敵方打斷冷卻時間顯示一個通用圖示。",
 	["Kick timer"] = "斷法計時器",
 	["Kick timer_Short"] = "打斷",
 

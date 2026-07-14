@@ -199,6 +199,7 @@ L:RegisterLocale("deDE", {
 	["Text Size"] = "Textgröße",
 
 	-- Kick Timer tab
+	["As of 12.0.5, the caster of an interrupt can no longer be identified. This module now just displays a generic icon using the shortest known enemy kick cooldown."] = "Seit 12.0.5 kann der Wirker einer Unterbrechung nicht mehr identifiziert werden. Dieses Modul zeigt jetzt nur noch ein generisches Symbol basierend auf der kürzesten bekannten gegnerischen Unterbrechungs-Abklingzeit.",
 	["Kick timer"] = "Unterbrechungs-Timer",
 	["Kick timer_Short"] = "Unterbr.",
 

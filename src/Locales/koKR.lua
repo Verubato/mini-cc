@@ -199,6 +199,7 @@ L:RegisterLocale("koKR", {
 	["Text Size"] = "텍스트 크기",
 
 	-- Kick Timer tab
+	["As of 12.0.5, the caster of an interrupt can no longer be identified. This module now just displays a generic icon using the shortest known enemy kick cooldown."] = "12.0.5부터는 차단 시전자를 더 이상 식별할 수 없습니다. 이제 이 모듈은 알려진 가장 짧은 적 차단 쿨다운을 사용하는 범용 아이콘만 표시합니다.",
 	["Kick timer"] = "차단 타이머",
 	["Kick timer_Short"] = "차단",
 
