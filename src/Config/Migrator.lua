@@ -14,6 +14,9 @@ local dbDefaults = {
 	AutoSwitch = {},
 	WhatsNew = {},
 	NotifiedChanges = true,
+	-- Last shown What's New text; rendered by the Home panel's Important News
+	-- section so it tracks the actual latest changes instead of a frozen literal.
+	LastNews = "",
 	GlowType = "Proc Glow",
 	FontScale = 1.0,
 	ConfigureBlizzardNameplates = true,

@@ -57,6 +57,13 @@ function M:Build(panel)
 	newsText:SetTextColor(1, 1, 1, 1)
 	newsText:SetWidth(contentWidth - 40)
 	newsText:SetJustifyH("LEFT")
-	newsText:SetText(L["Some good news:\n- A workaround has been implemented to show important auras again for nameplates/portraits/alerts."])
+	-- Show the last What's New notes recorded by NotifyChanges so this section
+	-- tracks the latest release; the literal is only the pre-LastNews fallback.
+	local db = mini:GetSavedVars()
+	local news = db.LastNews
+	if type(news) ~= "string" or news == "" then
+		news = L["Some good news:\n- A workaround has been implemented to show important auras again for nameplates/portraits/alerts."]
+	end
+	newsText:SetText(news)
 	newsText:SetPoint("TOPLEFT", newsDivider, "BOTTOMLEFT", 0, -verticalSpacing)
 end

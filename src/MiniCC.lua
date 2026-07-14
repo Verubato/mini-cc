@@ -55,6 +55,8 @@ local function NotifyChanges()
 	local text = table.concat(parts, "\n")
 
 	if text ~= "" then
+		-- Keep the latest notes for the Home panel's Important News section.
+		db.LastNews = text
 		mini:ShowDialog({
 			Title = title,
 			Text = text,
