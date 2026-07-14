@@ -100,7 +100,12 @@ L:SetDefaultStrings({
 	["Please enter a profile name."] = "Please enter a profile name.",
 
 	-- General tab
+	-- Glow Type display labels (the persisted value stays the English token).
+	["Proc Glow"] = "Proc Glow",
+	["Rotation Assist"] = "Rotation Assist",
+	["Pixel Glow"] = "Pixel Glow",
 	["Autocast Shine"] = "Autocast Shine",
+	["Slot Glow"] = "Slot Glow",
 	["Discord"] = "Discord",
 	["Export Profile"] = "Export Profile",
 	["Font Scale"] = "Font Scale",

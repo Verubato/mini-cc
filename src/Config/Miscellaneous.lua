@@ -66,6 +66,10 @@ function M:Build(panel)
 
 	local glowTypeDropdown = mini:Dropdown({
 		Parent = panel,
+		-- Items are stable persisted tokens (compared as literals in
+		-- IconSlotContainer and stored in MiniCCDB.GlowType); GetText maps them
+		-- to localized display labels so translating never corrupts the saved
+		-- value.
 		Items = {
 			"Proc Glow",
 			"Rotation Assist",
@@ -73,6 +77,9 @@ function M:Build(panel)
 			"Autocast Shine",
 			"Slot Glow",
 		},
+		GetText = function(value)
+			return L[value]
+		end,
 		GetValue = function()
 			return db.GlowType or "Proc Glow"
 		end,
