@@ -884,7 +884,6 @@ end
 ---@class FcdTrackedAura
 ---@field StartTime        number                  GetTime() when the aura was first detected
 ---@field AuraTypes        table<string,boolean>   set of applicable types: "BIG_DEFENSIVE", "EXTERNAL_DEFENSIVE"
----@field SpellId          number                  aura.spellId (may be a secret value)
 ---@field Evidence         EvidenceSet?            evidence types collected at detection time; nil if none found
 ---@field CastSnapshot         table<string,number>                     snapshot of lastCastTime at detection; used by OnAuraRemoved to attribute the cooldown to the correct caster
 ---@field CastSpellIdSnapshot  table<string,{SpellId:number,Time:number}[]>  snapshot of recent non-secret cast spell IDs at detection (list per unit); handles multiple UNIT_SPELLCAST_SUCCEEDED per keypress

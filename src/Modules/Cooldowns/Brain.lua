@@ -1135,7 +1135,9 @@ local function CommitCooldown(entry, tracked, rule, ruleUnit, measuredDuration)
 		StartTime = tracked.StartTime,
 		Cooldown = cooldown,
 		Remaining = cooldown - measuredDuration,
-		SpellId = tracked.SpellId,
+		-- rule.SpellId is the canonical id (also used as cdKey when present); tracked
+		-- auras carry no SpellId of their own.
+		SpellId = rule.SpellId,
 		MaxCharges = maxCharges,
 	}
 
