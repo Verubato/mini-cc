@@ -1,6 +1,7 @@
 ---@type string, Addon
 local _, addon = ...
 local wowEx = addon.Utils.WoWEx
+local units = addon.Utils.Units
 local kickData = addon.Core.KickData
 local GetTimePreciseSec = GetTimePreciseSec
 
@@ -125,11 +126,13 @@ local function OnInterrupted(unitToken)
 	local texture = kickIcon
 	local duration = defaultKickDuration
 
-	-- UnitIsEnemy covers duel opponents, arena/BG enemies, and MC'd allies — i.e. every case
+	-- IsEnemy covers duel opponents, arena/BG enemies, and MC'd allies — i.e. every case
 	-- where the local player or an ally could legitimately be the interrupter. When the
 	-- interrupted unit is a genuine teammate, an enemy did the kicking and our party-spec
 	-- heuristic / player-cast tracking is irrelevant, so we just show the generic rogue icon.
-	if UnitIsEnemy(unitToken, "player") then
+	-- The secret-safe wrapper is required here: raw UnitIsEnemy can return a secret
+	-- boolean on 12.0.5+, which errors in a plain condition on this combat path.
+	if units:IsEnemy(unitToken) then
 		local pending = pendingPlayerKick
 		if pending and (GetTimePreciseSec() - pending.Time) <= playerKickTolerance then
 			texture = pending.Texture
@@ -183,7 +186,7 @@ local function OnResetEvent(unitToken)
 	-- When a dynamic token (target/focus) changes, the new unit may already have an active
 	-- interrupt tracked under a different token (e.g. a nameplate token). Sync it over.
 	for otherToken, otherData in pairs(tracked) do
-		if otherToken ~= unitToken and otherData.Entry and UnitIsUnit(otherToken, unitToken) then
+		if otherToken ~= unitToken and otherData.Entry and units:SameUnit(otherToken, unitToken) then
 			local remaining = (otherData.Entry.StartTime + otherData.Entry.Duration) - GetTimePreciseSec()
 			if remaining > 0 then
 				data.Entry = otherData.Entry
