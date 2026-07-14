@@ -4,6 +4,7 @@
 -- a GUID-keyed in-memory cache and a simple run loop.
 ---@type string, Addon
 local _, addon = ...
+local units = addon.Utils.Units
 
 local inspectInterval  = 0.5
 local inspectTimeout   = 10
@@ -186,8 +187,10 @@ local function OnNotifyInspect(unit)
 	if not guid or issecretvalue(guid) then
 		return
 	end
-	-- Ignore inspects of non-friendly units (e.g. enemy players inspected by other addons).
-	if not UnitIsFriend(unit, "player") then
+	-- Ignore inspects of non-friendly units (e.g. enemy players inspected by other
+	-- addons). Secret-safe wrapper: another addon can NotifyInspect an enemy token,
+	-- where raw UnitIsFriend may return a secret boolean on 12.0.5+.
+	if not units:IsFriend(unit) then
 		return
 	end
 	if currentInspectUnit and unit ~= currentInspectUnit then
@@ -211,12 +214,12 @@ local function GetNextTarget()
 		end
 	end
 
-	local units = GetFriendlyUnits()
+	local friendlyUnits = GetFriendlyUnits()
 	local now = Now()
 
 	-- first pass: units with no cache entry
-	for _, unit in ipairs(units) do
-		if not UnitIsUnit(unit, "player") then
+	for _, unit in ipairs(friendlyUnits) do
+		if not units:SameUnit(unit, "player") then
 			local guid = UnitGUID(unit)
 			if guid and not issecretvalue(guid) then
 				local cacheEntry = unitGuidToSpec[guid]
@@ -228,8 +231,8 @@ local function GetNextTarget()
 	end
 
 	-- second pass: units with stale or missing spec
-	for _, unit in ipairs(units) do
-		if not UnitIsUnit(unit, "player") then
+	for _, unit in ipairs(friendlyUnits) do
+		if not units:SameUnit(unit, "player") then
 			local guid = UnitGUID(unit)
 			if guid and not issecretvalue(guid) then
 				local cacheEntry = unitGuidToSpec[guid]
@@ -300,7 +303,7 @@ function M:GetUnitSpecId(unit)
 		return nil
 	end
 
-	if UnitIsUnit(unit, "player") then
+	if units:SameUnit(unit, "player") then
 		if GetSpecialization and GetSpecializationInfo then
 			local index = GetSpecialization()
 			if index then

@@ -2,6 +2,7 @@
 local addonName, addon = ...
 local mini = addon.Core.Framework
 local array = addon.Utils.Array
+local units = addon.Utils.Units
 local wowEx = addon.Utils.WoWEx
 local maxParty = MAX_PARTY_MEMBERS or 4
 local maxRaid = MAX_RAID_MEMBERS or 40
@@ -860,7 +861,9 @@ function M:ShowHideFrame(frame, anchor, isTest, excludePlayer)
 	local unit = frame:GetAttribute("unit") or anchor.unit or anchor:GetAttribute("unit")
 
 	if unit and unit ~= "" then
-		if excludePlayer and UnitIsUnit(unit, "player") then
+		-- Secret-safe wrapper: raw UnitIsUnit can return a secret boolean on
+		-- 12.0.5+, which errors in a plain condition mid-refresh.
+		if excludePlayer and units:SameUnit(unit, "player") then
 			frame:Hide()
 			return
 		end
