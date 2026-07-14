@@ -1,5 +1,5 @@
 ---@type string, Addon
-local _, addon = ...
+local addonName, addon = ...
 
 addon.Modules.Cooldowns = addon.Modules.Cooldowns or {}
 
@@ -21,8 +21,13 @@ local Ambiguate = Ambiguate
 -- Shared current message updated before either send function fires.
 local currentMsg = ""
 
--- 0=success, 1=duplicate, 2=invalid, 3=toomany; silently disabled on failure.
-C_ChatInfo.RegisterAddonMessagePrefix(prefix)
+-- 0=success, 1=duplicate, 2=invalid, 3=toomany. Duplicate is fine (prefix already
+-- registered, e.g. after a UI reload); anything else means talent sync is dead,
+-- which must be surfaced rather than silently degrading cooldown accuracy.
+local registerResult = C_ChatInfo.RegisterAddonMessagePrefix(prefix)
+if registerResult ~= 0 and registerResult ~= 1 then
+	print(addonName .. " - PvP talent sync disabled: addon message prefix registration failed (" .. tostring(registerResult) .. ")")
+end
 
 local function GetLocalPvPTalentIds()
 	if not (C_SpecializationInfo and C_SpecializationInfo.GetAllSelectedPvpTalentIDs) then
