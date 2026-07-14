@@ -8,8 +8,12 @@ local migrator  -- set in Init after Migrator is loaded
 local M = {}
 addon.Core.ProfileManager = M
 
--- Keys from the top-level db that constitute a profile payload.
--- Must stay in sync with the list in Config/Migrator.lua.
+-- Top-level user settings from the db that constitute a profile payload.
+-- Must stay in sync with the user-facing top-level keys of dbDefaults in
+-- Config/Migrator.lua; Migrator consumes this list directly (there is no
+-- second copy). LocaleOverride is deliberately excluded (machine-local), as
+-- are profile machinery (Version/Profiles/ActiveProfile/AutoSwitch) and
+-- upgrade bookkeeping (WhatsNew/NotifiedChanges/LastNews).
 -- Exposed so Migrator.lua (loaded after this file) can reference it.
 M.PayloadKeys = {
 	"GlowType",
@@ -18,6 +22,7 @@ M.PayloadKeys = {
 	"CCNativeOrder",
 	"DisableSwipe",
 	"FadeWithParent",
+	"MillisecondsThreshold",
 	"Modules",
 }
 
