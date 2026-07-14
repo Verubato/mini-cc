@@ -33,50 +33,33 @@ local function NotifyChanges()
 	local title = L["MiniCC - What's New?"]
 	db.NotifiedChanges = true
 
-	if db.Version == 6 then
-		mini:ShowDialog({
-			Title = title,
-			Text = table.concat(db.WhatsNew, "\n"),
-		})
-	elseif db.Version == 7 then
-		mini:ShowDialog({
-			Title = title,
-			Text = table.concat({
-				"- CC icons in player/target/focus portraits (beta only).",
-				"- New option to colour the glow based on the dispel type.",
-			}, "\n"),
-		})
-	elseif db.Version == 8 then
-		mini:ShowDialog({
-			Title = title,
-			Text = table.concat({
-				"- Portrait icons now supported in prepatch (was beta only).",
-				"- Included important spells (defensives/offensives) in portrait icons, not just CC.",
-			}, "\n"),
-		})
-	elseif db.Version == 9 then
-		mini:ShowDialog({
-			Title = title,
-			Text = "- New spell alerts bar that shows enemy cooldowns.",
-		})
-	elseif db.Version >= 10 then
-		local whatsNew = db.WhatsNew
+	-- GetAndUpgradeDb always brings db.Version to the current schema before this
+	-- runs, so the only live path is the WhatsNew list accumulated by this
+	-- upgrade's migrations (the old Version 6-9 release-note branches were
+	-- unreachable). WhatsNew comes from user-editable SavedVariables, so its
+	-- shape and entries are type-checked rather than trusted; an error here
+	-- would abort the login handler before the initial Refresh.
+	local whatsNew = db.WhatsNew
+	db.WhatsNew = {}
 
-		if not whatsNew then
-			return
-		end
-
-		local text = table.concat(whatsNew, "\n")
-
-		if text and text ~= "" then
-			mini:ShowDialog({
-				Title = title,
-				Text = text,
-			})
-		end
+	if type(whatsNew) ~= "table" then
+		return
 	end
 
-	db.WhatsNew = {}
+	local parts = {}
+	for _, line in ipairs(whatsNew) do
+		if type(line) == "string" then
+			parts[#parts + 1] = line
+		end
+	end
+	local text = table.concat(parts, "\n")
+
+	if text ~= "" then
+		mini:ShowDialog({
+			Title = title,
+			Text = text,
+		})
+	end
 end
 
 local function OnEvent(_, event)
