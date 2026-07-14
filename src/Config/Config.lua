@@ -41,6 +41,26 @@ end
 function M:Init()
 	db = dbMigrator:GetAndUpgradeDb()
 
+	-- Returns true when Blizzard or an earlier-loading addon already owns this
+	-- slash command. hash_SlashCmdList keys are upper-cased and include the
+	-- leading slash (e.g. "/CC"). Cannot detect addons that load after us.
+	local function isSlashCommandTaken(command)
+		local key = command:upper()
+		return (hash_SlashCmdList and hash_SlashCmdList[key] ~= nil)
+			or (hash_SecureCmdList and hash_SecureCmdList[key] ~= nil)
+			or (hash_EmoteTokenList and hash_EmoteTokenList[key] ~= nil)
+	end
+
+	-- Claimed up front so the redirect text below can advertise exactly what got
+	-- registered; the handler is assigned further down once the window exists.
+	SLASH_MINICC1 = "/minicc"
+	SLASH_MINICC2 = "/mcc"
+
+	-- /cc is a short, contested token; only claim it if nothing else owns it.
+	if not isSlashCommandTaken("/cc") then
+		SLASH_MINICC3 = "/cc"
+	end
+
 	-- Register a minimal WoW settings entry so sub-categories can attach to it,
 	-- and the addon appears in Interface > AddOns for discoverability.
 	local redirectPanel = CreateFrame("Frame")
@@ -51,7 +71,9 @@ function M:Init()
 	if category then
 		local redirectMsg = redirectPanel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 		redirectMsg:SetPoint("TOPLEFT", 16, -16)
-		redirectMsg:SetText(L["Use /minicc, /mcc, or /cc to open the MiniCC config window."])
+		redirectMsg:SetText(SLASH_MINICC3
+			and L["Use /minicc, /mcc, or /cc to open the MiniCC config window."]
+			or L["Use /minicc or /mcc to open the MiniCC config window."])
 
 		local redirectBtn = CreateFrame("Button", nil, redirectPanel, "UIPanelButtonTemplate")
 		redirectBtn:SetSize(200, 26)
@@ -258,10 +280,6 @@ function M:Init()
 		hideOnEscape = true,
 	}
 
-	SLASH_MINICC1 = "/minicc"
-	SLASH_MINICC2 = "/mcc"
-	SLASH_MINICC3 = "/cc"
-
 	SlashCmdList.MINICC = function(msg)
 		msg = msg and msg:lower():match("^%s*(.-)%s*$") or ""
 
@@ -279,8 +297,9 @@ function M:Init()
 		window:Toggle()
 	end
 
-	-- add a /rl alias if the user doesn't have one defined already
-	if not SLASH_RL1 then
+	-- add a /rl alias if no other addon owns it (regardless of which SLASH_*
+	-- list name it registered under)
+	if not SLASH_RL1 and not isSlashCommandTaken("/rl") then
 		SLASH_RL1 = "/rl"
 		SlashCmdList["RL"] = function()
 			C_UI.Reload()

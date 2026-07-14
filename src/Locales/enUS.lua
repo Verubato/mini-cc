@@ -57,6 +57,7 @@ L:SetDefaultStrings({
 	["Settings"] = "Settings",
 	["Open Settings"] = "Open Settings",
 	["Use /minicc, /mcc, or /cc to open the MiniCC config window."] = "Use /minicc, /mcc, or /cc to open the MiniCC config window.",
+	["Use /minicc or /mcc to open the MiniCC config window."] = "Use /minicc or /mcc to open the MiniCC config window.",
 	["Show a glow around the icons."] = "Show a glow around the icons.",
 	["Test"] = "Test",
 	["Test these settings"] = "Test these settings",
