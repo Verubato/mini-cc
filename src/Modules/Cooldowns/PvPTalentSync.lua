@@ -52,6 +52,15 @@ end
 -- small multiple of that is a malformed or hostile payload.
 local maxIdsPerMessage = 8
 
+-- Existence-guarded: validates an id against real game talent data when the API
+-- is available, so remote payloads can only persist ids the client recognizes.
+local function IsKnownPvPTalentId(id)
+	if GetPvpTalentInfoByID then
+		return GetPvpTalentInfoByID(id) ~= nil
+	end
+	return true
+end
+
 local function MessageToIds(msg)
 	if not msg or msg == "" then
 		return nil
@@ -63,7 +72,7 @@ local function MessageToIds(msg)
 		-- through "nan"/"inf"/fractions, which detonate as table keys and persist
 		-- garbage into MiniCCDB.
 		local id = tonumber(part)
-		if id and id == math.floor(id) and id > 0 and id < 2 ^ 31 then
+		if id and id == math.floor(id) and id > 0 and id < 2 ^ 31 and IsKnownPvPTalentId(id) then
 			if #ids >= maxIdsPerMessage then
 				return nil
 			end
