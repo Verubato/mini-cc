@@ -687,8 +687,19 @@ function M:RegisterProvider(provider)
 	externalProviders[#externalProviders + 1] = provider
 
 	if type(provider.RegisterRefreshFrames) == "function" then
+		-- Debounced: a chatty provider invoking its callback every frame must not
+		-- drive repeated full refresh cycles (all modules + full frame discovery).
+		-- Coalesce bursts into one Refresh on the next timer tick.
+		local refreshPending = false
 		local ok, err = pcall(provider.RegisterRefreshFrames, function()
-			addon:Refresh()
+			if refreshPending then
+				return
+			end
+			refreshPending = true
+			C_Timer.After(0, function()
+				refreshPending = false
+				addon:Refresh()
+			end)
 		end)
 		if not ok then
 			mini:Notify("Frame provider '%s' RegisterRefreshFrames failed: %s", provider.Name, tostring(err))
