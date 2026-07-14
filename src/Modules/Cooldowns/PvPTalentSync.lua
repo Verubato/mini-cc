@@ -43,14 +43,25 @@ local function IdsToMessage(ids)
 	return table.concat(parts, ",")
 end
 
+-- A real loadout carries at most 4 selected PvP talent ids; anything past a
+-- small multiple of that is a malformed or hostile payload.
+local maxIdsPerMessage = 8
+
 local function MessageToIds(msg)
 	if not msg or msg == "" then
 		return nil
 	end
 	local ids = {}
 	for part in msg:gmatch("[^,]+") do
+		-- The message arrives from CHAT_MSG_ADDON, so tokens are untrusted: accept
+		-- only positive integers in talent-id range. Bare tonumber would also let
+		-- through "nan"/"inf"/fractions, which detonate as table keys and persist
+		-- garbage into MiniCCDB.
 		local id = tonumber(part)
-		if id then
+		if id and id == math.floor(id) and id > 0 and id < 2 ^ 31 then
+			if #ids >= maxIdsPerMessage then
+				return nil
+			end
 			ids[#ids + 1] = id
 		end
 	end
