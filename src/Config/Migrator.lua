@@ -2658,6 +2658,77 @@ function M:MigrateProfilePayload(payload, fromVersion, liveVars)
 	return true
 end
 
+local function IsSaneScalar(v)
+	local t = type(v)
+	if t == "string" or t == "boolean" then
+		return true
+	end
+	if t == "number" then
+		-- Reject NaN and +/-inf: they persist into SavedVariables and wedge
+		-- arithmetic/SetPoint on every Refresh.
+		return v == v and v ~= math.huge and v ~= -math.huge
+	end
+	return false
+end
+
+---Recursively copies from `data` only keys that exist in `template` with matching
+---value types; everything else is dropped (FillDefaults backfills the gaps).
+---An empty template table marks an opaque user hash (e.g. DisabledSpells): for
+---those, flat scalar entries are kept as-is.
+local function SanitizeAgainstTemplate(data, template)
+	local out = {}
+	if next(template) == nil then
+		for k, v in pairs(data) do
+			if IsSaneScalar(k) and IsSaneScalar(v) then
+				out[k] = v
+			end
+		end
+		return out
+	end
+	for k, v in pairs(data) do
+		local defaultValue = template[k]
+		if defaultValue ~= nil then
+			if type(defaultValue) == "table" then
+				if type(v) == "table" then
+					out[k] = SanitizeAgainstTemplate(v, defaultValue)
+				end
+			elseif type(v) == type(defaultValue) and IsSaneScalar(v) then
+				out[k] = v
+			end
+		end
+	end
+	return out
+end
+
+---Sanitizes an untrusted (imported/shared) profile payload against the current
+---schema: only PayloadKeys survive, every value is type-checked against dbDefaults,
+---and non-finite numbers are rejected. A valid numeric Version stamp is preserved
+---so the profile migration path can upgrade older imports.
+---@param data table decoded payload from an import string
+---@return table sanitized payload safe to store in db.Profiles
+function M:SanitizeProfilePayload(data)
+	local out = {}
+	for _, k in ipairs(addon.Core.ProfileManager.PayloadKeys) do
+		local v = data[k]
+		local defaultValue = dbDefaults[k]
+		if v ~= nil and defaultValue ~= nil then
+			if type(defaultValue) == "table" then
+				if type(v) == "table" then
+					out[k] = SanitizeAgainstTemplate(v, defaultValue)
+				end
+			elseif type(v) == type(defaultValue) and IsSaneScalar(v) then
+				out[k] = v
+			end
+		end
+	end
+	local version = data.Version
+	if type(version) == "number" and version == math.floor(version)
+		and version > 0 and version <= dbDefaults.Version then
+		out.Version = version
+	end
+	return out
+end
+
 ---@return Db
 function M:GetAndUpgradeDb()
 	-- A non-table MiniCCDB (hand-edited or corrupted saved variables) is otherwise

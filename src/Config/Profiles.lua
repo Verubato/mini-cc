@@ -58,6 +58,18 @@ local function ImportAsProfile(str, name)
 		profileData = data
 	end
 
+	-- Shared strings are untrusted input. Migrate stamped older payloads up to the
+	-- current schema first (so renamed settings survive), then drop unknown keys,
+	-- type-mismatched values, and non-finite numbers so a hostile or corrupted
+	-- import cannot wedge the live db when the profile is applied.
+	local migrator = addon.Config.Migrator
+	local payloadVersion = profileData.Version
+	if type(payloadVersion) == "number" and payloadVersion == math.floor(payloadVersion)
+		and payloadVersion > 0 and payloadVersion < migrator:GetSchemaVersion() then
+		migrator:MigrateProfilePayload(profileData, payloadVersion, nil)
+	end
+	profileData = migrator:SanitizeProfilePayload(profileData)
+
 	local db = mini:GetSavedVars()
 	db.Profiles = db.Profiles or {}
 	if db.Profiles[name] then
