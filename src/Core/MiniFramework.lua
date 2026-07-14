@@ -1734,9 +1734,7 @@ local function OnAddonLoaded(_, _, name)
 	loader:UnregisterEvent("ADDON_LOADED")
 
 	for _, callback in ipairs(onLoadCallbacks) do
-		-- Isolated: one failing loader must not abort the rest of addon
-		-- initialization (which would leave later components without a db).
-		xpcall(callback, geterrorhandler())
+		callback()
 	end
 end
 

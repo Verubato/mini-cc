@@ -27,6 +27,9 @@ local testFiles = {
     "tests/test_burrow.lua",
     "tests/test_emerald_communion.lua",
     "tests/test_aura_watcher.lua",
+	"tests/test_scheduler.lua",
+	"tests/test_external_api.lua",
+	"tests/test_frame_providers.lua",
 }
 
 local loadErrors = {}
