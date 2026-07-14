@@ -2545,7 +2545,9 @@ end
 -- "Profiles", "ActiveProfile", and "AutoSwitch" are included here because CleanTable
 -- would otherwise wipe all stored profile snapshots (profile names are unknown keys
 -- relative to the dbDefaults.Profiles = {} template).
-local opaqueCacheKeys = { "SpecCache", "TalentCache", "PvPTalentCache", "WhatsNew", "NotifiedChanges", "Profiles", "ActiveProfile", "AutoSwitch" }
+-- "NameplateCVarBackup" remembers the user's original nameplate CVar bits so
+-- disabling the nameplate module can restore them.
+local opaqueCacheKeys = { "SpecCache", "TalentCache", "PvPTalentCache", "WhatsNew", "NotifiedChanges", "Profiles", "ActiveProfile", "AutoSwitch", "NameplateCVarBackup" }
 
 local function SaveOpaqueCaches(vars)
 	local saved = {}

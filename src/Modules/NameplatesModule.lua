@@ -887,38 +887,66 @@ function M:StopTesting()
 	end
 end
 
-local function ApplyBlizzardNameplateSettings()
+---Clears (or restores) the loss-of-control/CC bits of Blizzard's nameplate CVars.
+---The pre-MiniCC value of each bit is remembered in db.NameplateCVarBackup the
+---first time it is cleared, and written back when the module (or the Configure
+---toggle) is turned off - previously the rewrite was permanent and silent.
+---Writes only happen when the current value differs, so refreshes no longer
+---fight other addons or manual changes every pass.
+---@param moduleEnabled boolean
+local function ApplyBlizzardNameplateSettings(moduleEnabled)
 	local configureEnabled = db.ConfigureBlizzardNameplates
 	if configureEnabled == nil then
 		configureEnabled = true
 	end
 
-	local anyEnemyEnabled = nmModule.Enemy.Bar1.Enabled
-		or nmModule.Enemy.Bar2.Enabled
+	local anyEnemyEnabled = moduleEnabled
+		and (nmModule.Enemy.Bar1.Enabled or nmModule.Enemy.Bar2.Enabled)
 
-	local anyFriendlyEnabled = nmModule.Friendly.Bar1.Enabled
-		or nmModule.Friendly.Bar2.Enabled
+	local anyFriendlyEnabled = moduleEnabled
+		and (nmModule.Friendly.Bar1.Enabled or nmModule.Friendly.Bar2.Enabled)
 
-	if configureEnabled and anyEnemyEnabled then
-		C_CVar.SetCVarBitfield("nameplateEnemyPlayerAuraDisplay", Enum.NamePlateEnemyPlayerAuraDisplay.LossOfControl, false)
-		C_CVar.SetCVarBitfield("nameplateEnemyNpcAuraDisplay", Enum.NamePlateEnemyNpcAuraDisplay.CrowdControl, false)
+	local function applyBit(cvar, bit, backupKey, wantCleared)
+		local current = C_CVar.GetCVarBitfield(cvar, bit) and true or false
+		if wantCleared then
+			if current then
+				db.NameplateCVarBackup = db.NameplateCVarBackup or {}
+				if db.NameplateCVarBackup[backupKey] == nil then
+					db.NameplateCVarBackup[backupKey] = true
+				end
+				C_CVar.SetCVarBitfield(cvar, bit, false)
+			end
+		else
+			local backup = db.NameplateCVarBackup
+			if backup and backup[backupKey] ~= nil then
+				if backup[backupKey] ~= current then
+					C_CVar.SetCVarBitfield(cvar, bit, backup[backupKey])
+				end
+				backup[backupKey] = nil
+			end
+		end
 	end
 
-	if configureEnabled and anyFriendlyEnabled then
-		C_CVar.SetCVarBitfield("nameplateFriendlyPlayerAuraDisplay", Enum.NamePlateFriendlyPlayerAuraDisplay.LossOfControl, false)
-	end
+	applyBit("nameplateEnemyPlayerAuraDisplay", Enum.NamePlateEnemyPlayerAuraDisplay.LossOfControl,
+		"EnemyPlayerLoC", configureEnabled and anyEnemyEnabled)
+	applyBit("nameplateEnemyNpcAuraDisplay", Enum.NamePlateEnemyNpcAuraDisplay.CrowdControl,
+		"EnemyNpcCC", configureEnabled and anyEnemyEnabled)
+	applyBit("nameplateFriendlyPlayerAuraDisplay", Enum.NamePlateFriendlyPlayerAuraDisplay.LossOfControl,
+		"FriendlyPlayerLoC", configureEnabled and anyFriendlyEnabled)
 end
 
 function M:Refresh()
 	local moduleEnabled = moduleUtil:IsModuleEnabled(moduleName.Nameplates)
 
 	if not moduleEnabled or not AnyEnabled() then
+		-- Restore any CVar bits we cleared before going dormant.
+		ApplyBlizzardNameplateSettings(false)
 		DisableWatchers()
 		CacheEnabledModes()
 		return
 	end
 
-	ApplyBlizzardNameplateSettings()
+	ApplyBlizzardNameplateSettings(true)
 
 	-- Module is enabled, ensure watchers are enabled
 	EnableWatchers()
