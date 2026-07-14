@@ -1316,10 +1316,13 @@ function M:UpgradeToVersion18(vars)
 			vars.Modules.HealerCCModule[key] = mini:CopyValueOrTable(value)
 		end
 
+		local healerFilters = vars.Healer.Filters or {}
 		vars.Modules.HealerCCModule.Enabled = {
 			Always = vars.Healer.Enabled,
-			Arena = vars.Healer.Filters.Arena,
-			Raids = vars.Healer.BattleGrounds,
+			Arena = healerFilters.Arena,
+			-- The old schema keeps the battlegrounds flag under Filters, not on the
+			-- Healer table itself (vars.Healer.BattleGrounds was always nil).
+			Raids = healerFilters.BattleGrounds,
 			Dungeons = vars.Healer.Enabled,
 		}
 
