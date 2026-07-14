@@ -1813,9 +1813,10 @@ function M:UpgradeToVersion23(vars)
 		},
 	}
 
-	-- might as well clean up any garbage while we're here
-	-- do this before we add stuff to what's new otherwise it'll get cleared
-	mini:CleanTable(vars, dbDefaults, true, true)
+	-- No mid-chain CleanTable here: cleaning against the live dbDefaults would strip
+	-- keys that later migrations still need (Enabled.Always/Raids for v25/v27, the
+	-- nameplate CC/Combined sections for v49). The final CleanTable in
+	-- GetAndUpgradeDb handles leftover garbage once the chain is complete.
 
 	table.insert(vars.WhatsNew, " - Added important and defensive alert sound effects.")
 	table.insert(vars.WhatsNew, " - Added text to speech functionality in the alerts module (i.e. GladiatorlosSA).")
