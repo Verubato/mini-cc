@@ -29,11 +29,26 @@ local talentToSpellMapCache = {}
 -- spec+talent selection that fires via multiple events in a single tick.
 local processedTalentStrings = {}
 
--- All talent data is keyed by the realm-stripped short name (e.g. "Bob" not "Bob-Realm").
--- UnitNameUnmodified returns the full name for cross-realm players, so strip the realm here
--- before any table lookup to ensure cross-realm players' data is found correctly.
-local function ShortName(name)
-	return name:match("^([^%-]+)") or name
+-- All talent data is keyed by the name in Ambiguate("none") form: "Bob" for
+-- same-realm players, "Bob-NormalizedRealm" for cross-realm players. Keeping the
+-- realm qualifier prevents two same-named players from different realms from
+-- sharing (and overwriting) one record. Comm senders are normalized with NameKey;
+-- unit tokens are resolved with UnitDataKey, which produces the same form.
+local function NameKey(name)
+	return Ambiguate(name, "none")
+end
+
+-- Resolves a unit token to the key its talent data is stored under, or nil when
+-- the name is unavailable or a secret value (possible for arena enemies on 12.0.5+).
+local function UnitDataKey(unit)
+	local name, realm = UnitNameUnmodified(unit)
+	if not name or issecretvalue(name) then
+		return nil
+	end
+	if realm and realm ~= "" and not issecretvalue(realm) then
+		return name .. "-" .. realm
+	end
+	return name
 end
 
 -- Cooldown/duration-affecting talent modifiers.
@@ -631,7 +646,7 @@ local function OnLibSpecUpdate(specId, playerName, talentString)
 	if not talentString then
 		return
 	end
-	local name = ShortName(playerName)
+	local name = NameKey(playerName)
 	-- Skip if this exact talent string was already decoded for this player. LibSpec fires
 	-- both ACTIVE_COMBAT_CONFIG_CHANGED and TRAIT_CONFIG_UPDATED on a single spec change,
 	-- and UpdateLocalPlayer may also have already decoded the local player's string.
@@ -701,10 +716,10 @@ end
 ---@param measuredDuration number?
 ---@return number
 function M:GetUnitCooldown(unit, specId, classToken, abilityId, baseCooldown, measuredDuration)
-	local rawName = UnitNameUnmodified(unit)
-	-- Arena enemy names are secret values; resolve to nil so GetEffectiveTalentRanks
-	-- falls back to class/spec defaults rather than returning baseCooldown unchanged.
-	local playerName = (rawName and not issecretvalue(rawName)) and ShortName(rawName) or nil
+	-- Arena enemy names are secret values; UnitDataKey resolves those to nil so
+	-- GetEffectiveTalentRanks falls back to class/spec defaults rather than
+	-- returning baseCooldown unchanged.
+	local playerName = UnitDataKey(unit)
 	local talentRanks = GetEffectiveTalentRanks(playerName, classToken, specId)
 	if not talentRanks then
 		return baseCooldown
@@ -797,10 +812,10 @@ end
 ---@param baseDuration number
 ---@return number
 function M:GetUnitBuffDuration(unit, specId, classToken, abilityId, baseDuration)
-	local rawName = UnitNameUnmodified(unit)
-	-- Arena enemy names are secret values; resolve to nil so GetEffectiveTalentRanks
-	-- falls back to class/spec defaults rather than returning baseDuration unchanged.
-	local playerName = (rawName and not issecretvalue(rawName)) and ShortName(rawName) or nil
+	-- Arena enemy names are secret values; UnitDataKey resolves those to nil so
+	-- GetEffectiveTalentRanks falls back to class/spec defaults rather than
+	-- returning baseDuration unchanged.
+	local playerName = UnitDataKey(unit)
 	local talentRanks = GetEffectiveTalentRanks(playerName, classToken, specId)
 	if not talentRanks then
 		return baseDuration
@@ -847,8 +862,7 @@ end
 ---@param abilityId number
 ---@return number
 function M:GetUnitMaxCharges(unit, specId, classToken, abilityId)
-	local rawName = UnitNameUnmodified(unit)
-	local playerName = (rawName and not issecretvalue(rawName)) and ShortName(rawName) or nil
+	local playerName = UnitDataKey(unit)
 	local talentRanks = GetEffectiveTalentRanks(playerName, classToken, specId)
 	if not talentRanks then
 		return 1
@@ -890,9 +904,8 @@ end
 ---@param callerSpecId number? Caller-resolved spec ID (e.g. from Inspector); used when unitTalentSpecId has no entry
 ---@return boolean
 function M:UnitHasTalent(unit, talentSpellId, callerSpecId)
-	local playerName = UnitNameUnmodified(unit)
-	if playerName and not issecretvalue(playerName) then
-		playerName = ShortName(playerName)
+	local playerName = UnitDataKey(unit)
+	if playerName then
 		local talentRanks = unitTalentRanks[playerName]
 		if talentRanks ~= nil and (talentRanks[talentSpellId] or 0) > 0 then
 			return true
@@ -944,11 +957,11 @@ function M:GetUnitSpecId(unit)
 	if specId then
 		return specId
 	end
-	local playerName = UnitNameUnmodified(unit)
-	if not playerName or issecretvalue(playerName) then
+	local playerName = UnitDataKey(unit)
+	if not playerName then
 		return nil
 	end
-	return unitTalentSpecId[ShortName(playerName)]
+	return unitTalentSpecId[playerName]
 end
 
 ---Registers a callback to be fired when any unit's talent data is updated.
@@ -1014,7 +1027,7 @@ function M:Init()
 
 	-- Receive PvP talent data from group members via PvPTalentSync.
 	addon.Modules.Cooldowns.PvPTalentSync:RegisterCallback(function(playerName, pvpTalentIds)
-		local name = playerName:match("^([^%-]+)") or playerName
+		local name = NameKey(playerName)
 		if pvpTalentIds then
 			local ids = {}
 			for _, id in ipairs(pvpTalentIds) do
