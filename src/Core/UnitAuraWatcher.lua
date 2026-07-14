@@ -52,7 +52,9 @@ local function NotifyCallbacks(watcher)
 	end
 
 	for _, callback in ipairs(callbacks) do
-		callback(watcher)
+		-- Isolated so one failing subscriber can't starve the rest on the
+		-- UNIT_AURA hot path.
+		xpcall(callback, geterrorhandler(), watcher)
 	end
 end
 

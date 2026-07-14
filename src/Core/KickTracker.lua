@@ -78,7 +78,8 @@ addon.Core.KickTracker = M
 
 local function FireCallbacks(data)
 	for _, fn in pairs(data.Callbacks) do
-		fn()
+		-- Isolated so one failing subscriber can't starve the rest.
+		xpcall(fn, geterrorhandler())
 	end
 end
 

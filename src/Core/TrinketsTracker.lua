@@ -11,7 +11,8 @@ local callbacks = {}
 
 local function FireCallbacks(unit)
 	for _, fn in ipairs(callbacks) do
-		fn(unit)
+		-- Isolated so one failing subscriber can't starve the rest.
+		xpcall(fn, geterrorhandler(), unit)
 	end
 end
 
