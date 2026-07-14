@@ -2858,10 +2858,6 @@ else
       212449, -- Sikran's Endless Arsenal
       219915, -- Foul Behemoth's Chelicera
     },
-    [6] = {
-      164766, -- Iwen's Enchanting Rod
-      219525, -- Globe of Nourishment
-    },
     [7] = {
       61323,  -- Ruby Seeds
       62899,  -- Enchanted Imp Sack
