@@ -188,7 +188,6 @@ mini:WaitForAddonLoad(OnAddonLoaded)
 ---@field ModuleUtil ModuleUtil
 ---@field ModuleName ModuleName
 ---@field WoWEx WoWEx
----@field PvPTalentSync PvPTalentSync
 
 ---@class Core
 ---@field Framework MiniFramework

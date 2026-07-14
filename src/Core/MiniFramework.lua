@@ -3,7 +3,6 @@ local L = addon.L
 local loader = CreateFrame("Frame")
 local loaded = false
 local onLoadCallbacks = {}
-local dropDownId = 1
 local sliderId = 1
 local dialog
 
@@ -206,31 +205,11 @@ function M:ClampFloat(v, minV, maxV, fallback)
 	return v
 end
 
-function M:IsSecret(value)
-	if not issecretvalue then
-		return false
-	end
-
-	return issecretvalue(value)
-end
-
-function M:CanOpenOptionsDuringCombat()
-	if LE_EXPANSION_LEVEL_CURRENT == nil or LE_EXPANSION_MIDNIGHT == nil then
-		return true
-	end
-
-	return LE_EXPANSION_LEVEL_CURRENT < LE_EXPANSION_MIDNIGHT
-end
-
 function M:SettingsSize()
 	local settingsContainer = SettingsPanel and SettingsPanel.Container
 
 	if settingsContainer then
 		return settingsContainer:GetWidth(), settingsContainer:GetHeight()
-	end
-
-	if InterfaceOptionsFramePanelContainer then
-		return InterfaceOptionsFramePanelContainer:GetWidth(), InterfaceOptionsFramePanelContainer:GetHeight()
 	end
 
 	return 600, 600
@@ -246,70 +225,9 @@ function M:AddCategory(panel)
 		Settings.RegisterAddOnCategory(category)
 
 		return category
-	elseif InterfaceOptions_AddCategory then
-		InterfaceOptions_AddCategory(panel)
-
-		return panel
 	end
 
 	return nil
-end
-
-function M:AddSubCategory(parentCategory, panel)
-	if not parentCategory then
-		error("AddSubCategory - parentCategory must not be nil.")
-	end
-
-	if not panel then
-		error("AddSubCategory - panel must not be nil.")
-	end
-
-	if Settings and Settings.RegisterCanvasLayoutSubcategory then
-		Settings.RegisterCanvasLayoutSubcategory(parentCategory, panel, panel.name)
-	elseif InterfaceOptions_AddCategory then
-		InterfaceOptions_AddCategory(panel)
-	end
-end
-
-function M:WireTabNavigation(controls)
-	if not controls then
-		error("WireTabNavigation - controls must not be nil")
-	end
-
-	for i, control in ipairs(controls) do
-		control:EnableKeyboard(true)
-
-		control:SetScript("OnTabPressed", function(ctl)
-			if ctl.ClearFocus then
-				ctl:ClearFocus()
-			end
-
-			if ctl.HighlightText then
-				ctl:HighlightText(0, 0)
-			end
-
-			local backwards = IsShiftKeyDown()
-			local nextIndex = i + (backwards and -1 or 1)
-
-			-- wrap around
-			if nextIndex < 1 then
-				nextIndex = #controls
-			elseif nextIndex > #controls then
-				nextIndex = 1
-			end
-
-			local next = controls[nextIndex]
-			if next then
-				if next.SetFocus then
-					next:SetFocus()
-				end
-
-				if next.HighlightText then
-					next:HighlightText()
-				end
-			end
-		end)
-	end
 end
 
 ---@param options TextLineOptions
@@ -373,112 +291,6 @@ function M:TextBlock(options)
 
 	container:SetHeight(math.max(1, totalHeight))
 
-	return container
-end
-
----@param options TextBlockSegmentedOptions
-function M:TextBlockSegmented(options)
-	if not options or not options.Parent or not options.Lines then
-		error("TextBlockSegmented - invalid options.")
-	end
-
-	local prefixFont = options.PrefixFont or "GameFontWhite"
-	local textFont = options.TextFont or "GameFontNormal"
-	local suffixFont = options.SuffixFont or "GameFontWhite"
-	local verticalSpacing = options.VerticalSpacing or M.VerticalSpacing
-	local segmentSpacing = options.SegmentSpacing or 0
-
-	local container = CreateFrame("Frame", nil, options.Parent)
-	container:SetWidth(M.TextMaxWidth)
-
-	local prevLine
-	local totalHeight = 0
-
-	local function ApplyFont(fs, font)
-		if type(font) == "string" then
-			fs:SetFontObject(_G[font] or GameFontWhite)
-		elseif type(font) == "table" then
-			fs:SetFontObject(font)
-		else
-			fs:SetFontObject(GameFontWhite)
-		end
-	end
-
-	local function CreateSeg(parent, text, font, width)
-		local fs = parent:CreateFontString(nil, "ARTWORK", "GameFontWhite")
-		fs:SetJustifyH("LEFT")
-		fs:SetSpacing(0)
-
-		ApplyFont(fs, font)
-
-		if width then
-			fs:SetWidth(width)
-		end
-
-		fs:SetText(text or "")
-		return fs
-	end
-
-	for i, entry in ipairs(options.Lines) do
-		local gap = (i == 1) and 0 or (verticalSpacing / 2)
-
-		local lineFrame = CreateFrame("Frame", nil, container)
-		lineFrame:SetWidth(M.TextMaxWidth)
-
-		if i == 1 then
-			lineFrame:SetPoint("TOPLEFT", container, "TOPLEFT", 0, 0)
-		else
-			lineFrame:SetPoint("TOPLEFT", prevLine, "BOTTOMLEFT", 0, -gap)
-		end
-
-		local segments = {}
-
-		if type(entry) == "string" then
-			segments[1] = CreateSeg(lineFrame, entry, suffixFont)
-		else
-			if entry.Prefix then
-				segments[#segments + 1] = CreateSeg(lineFrame, entry.Prefix, prefixFont)
-			end
-
-			if entry.Text then
-				segments[#segments + 1] = CreateSeg(lineFrame, entry.Text, textFont)
-			end
-
-			if entry.Suffix then
-				segments[#segments + 1] = CreateSeg(lineFrame, entry.Suffix, suffixFont)
-			end
-		end
-
-		-- Anchor segments
-		for s = 1, #segments do
-			if s == 1 then
-				segments[s]:SetPoint("TOPLEFT", lineFrame, "TOPLEFT", 0, 0)
-			else
-				segments[s]:SetPoint("TOPLEFT", segments[s - 1], "TOPRIGHT", segmentSpacing, 0)
-			end
-		end
-
-		-- Last segment wraps
-		local used = 0
-		for s = 1, #segments - 1 do
-			used = used + segments[s]:GetStringWidth() + segmentSpacing
-		end
-
-		local remain = math.max(10, M.TextMaxWidth - used)
-		segments[#segments]:SetWidth(remain)
-
-		-- Height calc
-		local height = 1
-		for _, fs in ipairs(segments) do
-			height = math.max(height, fs:GetStringHeight())
-		end
-
-		lineFrame:SetHeight(height)
-		totalHeight = totalHeight + gap + height
-		prevLine = lineFrame
-	end
-
-	container:SetHeight(math.max(1, totalHeight))
 	return container
 end
 
@@ -612,99 +424,9 @@ function M:Dropdown(options)
 		return dd, true
 	end
 
-	local libDD = LibStub and LibStub:GetLibrary("LibUIDropDownMenu-4.0", true)
-
-	if libDD then
-		-- needs a name to not bug out
-		local dd = libDD:Create_UIDropDownMenu(addonName .. "Dropdown" .. dropDownId, options.Parent)
-		dropDownId = dropDownId + 1
-
-		libDD:UIDropDownMenu_Initialize(dd, function()
-			for _, value in ipairs(options.Items) do
-				local info = libDD:UIDropDownMenu_CreateInfo()
-				info.text = options.GetText and options.GetText(value) or tostring(value)
-				info.value = value
-
-				info.checked = function()
-					return options.GetValue() == value
-				end
-
-				local id = dd:GetID(info)
-
-				-- onclick handler
-				info.func = function()
-					local text = options.GetText and options.GetText(value) or tostring(value)
-
-					libDD:UIDropDownMenu_SetSelectedID(dd, id)
-					libDD:UIDropDownMenu_SetText(dd, text)
-
-					options.SetValue(value)
-				end
-
-				libDD:UIDropDownMenu_AddButton(info, 1)
-
-				if options.GetValue() == value then
-					libDD:UIDropDownMenu_SetSelectedID(dd, id)
-				end
-			end
-		end)
-
-		function dd.MiniRefresh()
-			local value = options.GetValue()
-			local text = options.GetText and options.GetText(value) or tostring(value)
-			libDD:UIDropDownMenu_SetText(dd, text)
-		end
-
-		AddControlForRefresh(options.Parent, dd)
-
-		return dd, false
-	end
-
-	-- UIDropDownMenuTemplate is nil, but still usable
-	if UIDropDownMenu_Initialize then
-		local dd = CreateFrame("Frame", name, options.Parent, "UIDropDownMenuTemplate")
-
-		UIDropDownMenu_Initialize(dd, function()
-			for _, value in ipairs(options.Items) do
-				local info = UIDropDownMenu_CreateInfo()
-				info.text = options.GetText and options.GetText(value) or tostring(value)
-				info.value = value
-
-				info.checked = function()
-					return options.GetValue() == value
-				end
-
-				-- onclick handler
-				info.func = function()
-					local text = options.GetText and options.GetText(value) or tostring(value)
-					local id = dd:GetID(info)
-
-					UIDropDownMenu_SetSelectedID(dd, id)
-					UIDropDownMenu_SetText(dd, text)
-
-					setSelected(value)
-				end
-
-				UIDropDownMenu_AddButton(info, 1)
-
-				if getValue() == value then
-					local id = dd:GetID(info)
-					UIDropDownMenu_SetSelectedID(dd, id)
-				end
-			end
-		end)
-
-		function dd.MiniRefresh()
-			local value = options.GetValue()
-			local text = options.GetText and options.GetText(value) or tostring(value)
-			UIDropDownMenu_SetText(dd, text)
-		end
-
-		AddControlForRefresh(options.Parent, dd)
-
-		return dd, false
-	end
-
+	-- Retail (Interface 120007) always provides MenuUtil.CreateRadioMenu; the
+	-- pre-retail LibUIDropDownMenu/UIDropDownMenu fallbacks were unreachable and
+	-- have been removed.
 	error("Failed to create a dropdown control")
 end
 
@@ -889,114 +611,6 @@ function M:Slider(options)
 	AddControlForRefresh(options.Parent, box)
 
 	return { Slider = slider, EditBox = box, Label = label }
-end
-
----Creates a generic list of items
----@param options ListOptions
----@return ListReturn
-function M:List(options)
-	local scroll = CreateFrame("ScrollFrame", nil, options.Parent, "UIPanelScrollFrameTemplate")
-	scroll:SetPoint("TOPLEFT", 0, 0)
-	scroll:SetPoint("BOTTOMRIGHT", options.Parent, "BOTTOMRIGHT", 0, 0)
-
-	local content = CreateFrame("Frame", nil, scroll)
-	content:SetSize(1, 1)
-	scroll:SetScrollChild(content)
-
-	local rows = {}
-	local items = {}
-
-	local function RefreshScrollbar()
-		-- show scroll bar if we've reached the max visible height
-		local visibleHeight = scroll:GetHeight()
-		local contentHeight = content:GetHeight()
-
-		if contentHeight <= visibleHeight then
-			if scroll.ScrollBar then
-				scroll.ScrollBar:Hide()
-			end
-		else
-			if scroll.ScrollBar then
-				scroll.ScrollBar:Show()
-			end
-		end
-	end
-
-	local function Refresh()
-		for _, row in ipairs(rows) do
-			row:Hide()
-		end
-
-		table.sort(items)
-
-		local y = options.RowGap or -2
-
-		for i, item in ipairs(items) do
-			local row = rows[i]
-
-			if not row then
-				row = CreateFrame("Button", nil, content)
-				row:SetSize(options.RowWidth, options.RowHeight)
-
-				row.Text = row:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-				row.Text:SetPoint("LEFT", 0, 0)
-
-				row.Remove = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
-				row.Remove:SetSize(options.RemoveButtonWidth or 80, options.RowHeight - 2)
-				row.Remove:SetPoint("RIGHT", 0, 0)
-				row.Remove:SetText("Remove")
-
-				rows[i] = row
-			end
-
-			row:SetPoint("TOPLEFT", 0, y)
-			row.Text:SetText(item)
-			row:Show()
-
-			row.Remove:SetScript("OnClick", function()
-				for idx, v in ipairs(items) do
-					if v == item then
-						table.remove(items, idx)
-						break
-					end
-				end
-
-				if options.OnRemove then
-					options.OnRemove(item)
-				end
-
-				Refresh()
-			end)
-
-			y = y - options.RowHeight
-		end
-
-		content:SetHeight(math.max(1, -y + 10))
-		RefreshScrollbar()
-	end
-
-	content:HookScript("OnShow", RefreshScrollbar)
-
-	local api = {}
-
-	function api.Add(_, item)
-		table.insert(items, item)
-		Refresh()
-	end
-
-	function api.SetItems(_, newItems)
-		items = newItems or {}
-		Refresh()
-	end
-
-	function api.GetItems(_)
-		return items
-	end
-
-	api.ScrollFrame = scroll
-	api.Content = content
-
-	return api
 end
 
 ---@param options TabOptions
@@ -1453,52 +1067,6 @@ function M:HideDialog()
 	end
 end
 
-function M:RegisterSlashCommand(category, panel, commands)
-	if not category then
-		error("RegisterSlashCommand - category must not be nil.")
-	end
-	if not panel then
-		error("RegisterSlashCommand - panel must not be nil.")
-	end
-
-	local upper = string.upper(addonName)
-
-	SlashCmdList[upper] = function()
-		M:OpenSettings(category, panel)
-	end
-
-	if commands and #commands > 0 then
-		local addonUpper = string.upper(addonName)
-
-		for i, command in ipairs(commands) do
-			_G["SLASH_" .. addonUpper .. i] = command
-		end
-	end
-end
-
-function M:OpenSettings(category, panel)
-	if not category then
-		error("OpenSettings - category must not be nil.")
-	end
-
-	if not panel then
-		error("OpenSettings - panel must not be nil.")
-	end
-
-	if Settings and Settings.OpenToCategory then
-		if not InCombatLockdown() or M:CanOpenOptionsDuringCombat() then
-			Settings.OpenToCategory(category:GetID())
-		else
-			M:NotifyCombatLockdown()
-		end
-	elseif InterfaceOptionsFrame_OpenToCategory then
-		-- workaround the classic bug where the first call opens the Game interface
-		-- and a second call is required
-		InterfaceOptionsFrame_OpenToCategory(panel)
-		InterfaceOptionsFrame_OpenToCategory(panel)
-	end
-end
-
 function M:WaitForAddonLoad(callback)
 	if not callback then
 		error("WaitForAddonLoad - callback must not be nil.")
@@ -1513,19 +1081,6 @@ end
 
 function M:GetSavedVars(defaults)
 	local name = addonName .. "DB"
-	local vars = _G[name] or {}
-
-	_G[name] = vars
-
-	if defaults then
-		return M:CopyTable(defaults, vars)
-	end
-
-	return vars
-end
-
-function M:GetCharacterSavedVars(defaults)
-	local name = addonName .. "CharDB"
 	local vars = _G[name] or {}
 
 	_G[name] = vars
@@ -1809,21 +1364,6 @@ loader:SetScript("OnEvent", OnAddonLoaded)
 ---@field Parent table
 ---@field Text string
 
----@class ListOptions
----@field Parent table
----@field RowGap number?
----@field RowWidth number
----@field RowHeight number
----@field RemoveButtonWidth number?
----@field OnRemove fun(item: any)
-
----@class ListReturn
----@field ScrollFrame table
----@field Content table
----@field Add fun(self: table, item: any)
----@field SetItems fun(self: table, items: table)
----@field GetItems fun(self: table): table
-
 ---@class Tab
 ---@field Key string
 ---@field Title string
@@ -1856,17 +1396,3 @@ loader:SetScript("OnEvent", OnAddonLoaded)
 ---@field Left number?
 ---@field Right number?
 ---@field Bottom number?
-
----@class TextLine
----@field Prefix string
----@field Suffix string
----@field Text string
-
----@class TextBlockSegmentedOptions
----@field Parent table
----@field Lines (string|TextLine)[]
----@field PrefixFont? string|table
----@field TextFont?  string|table
----@field SuffixFont? string|table
----@field VerticalSpacing? number
----@field SegmentSpacing? number

@@ -1585,6 +1585,8 @@ function B:RegisterPredictiveGlowDurationChangedCallback(fn)
 	predictiveGlowDurationChangedCallback = fn
 end
 
+-- Test hooks used by the repository's headless test harness.
+
 -- Clears all per-unit timestamp state. Called by tests between cases so state
 -- from one test cannot bleed into the next.
 function B._TestReset()

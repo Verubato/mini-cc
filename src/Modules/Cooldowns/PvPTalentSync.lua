@@ -6,7 +6,6 @@ addon.Modules.Cooldowns = addon.Modules.Cooldowns or {}
 ---@class PvPTalentSync
 local M = {}
 addon.Modules.Cooldowns.PvPTalentSync = M
-addon.Utils.PvPTalentSync = M -- backward compat
 
 local prefix = "MiniCC:Talents"
 local throttleTimer = 3
