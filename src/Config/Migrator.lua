@@ -2360,18 +2360,31 @@ function M:UpgradeToVersion49(vars)
 	-- by CleanTable against the new defaults.
 	local nameplates = vars.Modules and vars.Modules.NameplatesModule
 	if nameplates then
+		-- The old sections stored Icons.ColorByDispelType; the bar schema reads
+		-- Icons.ColorByCategory. Rename it so the preference survives (the stale
+		-- key would otherwise be stripped by CleanTable and refilled with the
+		-- default true).
+		local function CarryColorPreference(section)
+			local icons = section.Icons
+			if icons and icons.ColorByDispelType ~= nil then
+				icons.ColorByCategory = icons.ColorByDispelType
+				icons.ColorByDispelType = nil
+			end
+		end
 		for _, factionKey in ipairs({ "Friendly", "Enemy" }) do
 			local faction = nameplates[factionKey]
 			if faction then
 				if faction.CC and not faction.Bar1 then
 					faction.CC.ShowCC = true
 					faction.CC.ShowDefensives = false
+					CarryColorPreference(faction.CC)
 					faction.Bar1 = faction.CC
 					faction.CC = nil
 				end
 				if faction.Combined and not faction.Bar2 then
 					faction.Combined.ShowCC = false
 					faction.Combined.ShowDefensives = true
+					CarryColorPreference(faction.Combined)
 					faction.Bar2 = faction.Combined
 					faction.Combined = nil
 				end
