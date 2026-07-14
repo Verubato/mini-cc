@@ -2633,6 +2633,14 @@ end
 
 ---@return Db
 function M:GetAndUpgradeDb()
+	-- A non-table MiniCCDB (hand-edited or corrupted saved variables) is otherwise
+	-- unrepairable: GetSavedVars keeps the truthy garbage in _G.MiniCCDB, migrations
+	-- fail against it, and the fresh table SoftReset returns is never assigned back,
+	-- so no setting ever persists again. Treat it as first-time setup instead.
+	if MiniCCDB ~= nil and type(MiniCCDB) ~= "table" then
+		MiniCCDB = nil
+	end
+
 	local isFirstTimeSetup = MiniCCDB == nil
 
 	if isFirstTimeSetup then
