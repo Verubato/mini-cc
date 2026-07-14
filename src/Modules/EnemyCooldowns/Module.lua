@@ -294,6 +294,15 @@ local sd = SignatureDetector:New({
 
 -- Aura lifecycle
 
+-- Reusable scratch buffers for the UNIT_AURA hot path, mirroring Brain.lua's
+-- deliberate pattern: OnWatcherChanged fires many times per second in arena and
+-- per-event table allocation drives GC churn at the most latency-sensitive
+-- moments. FindBestCandidate reads candidateUnits synchronously (Brain copies
+-- when it needs to retain), so reuse is safe.
+local candidateUnitsScratch = {}
+local unmatchedNewIdsScratch = {}
+local newIdsBySignatureScratch = {}
+
 ---Called when a tracked aura disappears. Tries to match a rule; returns true if a cooldown was committed.
 local function OnAuraRemoved(entry, tracked)
 	-- Don't commit cooldowns from auras dropping during the prep room.
@@ -310,7 +319,8 @@ local function OnAuraRemoved(entry, tracked)
 	--   Shield evidence: a CastableOnOthers absorb spell (e.g. AMS Spellwarding) was cast by
 	--     another enemy unit, not the aura's recipient.
 	-- For external defensives all arena units are always valid casters.
-	local candidateUnits = {}
+	local candidateUnits = candidateUnitsScratch
+	wipe(candidateUnits)
 	if tracked.AuraTypes["EXTERNAL_DEFENSIVE"]
 	   or (tracked.Evidence and tracked.Evidence["Shield"])
 	then
@@ -444,14 +454,16 @@ local function OnWatcherChanged(entry, watcher)
 	-- Collect unmatched new IDs for heuristic reconciliation.
 	-- On full updates the server may reassign aura instance IDs; if the AuraTypes signature
 	-- matches an orphaned tracked entry, carry tracking forward under the new ID.
-	local unmatchedNewIds = {}
+	local unmatchedNewIds = unmatchedNewIdsScratch
+	wipe(unmatchedNewIds)
 	for id in pairs(currentIds) do
 		if not trackedAuras[id] then
 			unmatchedNewIds[#unmatchedNewIds + 1] = id
 		end
 	end
 
-	local newIdsBySignature = {}
+	local newIdsBySignature = newIdsBySignatureScratch
+	wipe(newIdsBySignature)
 	for _, id in ipairs(unmatchedNewIds) do
 		local sig = AuraTypesSignature(currentIds[id].AuraTypes)
 		newIdsBySignature[sig] = newIdsBySignature[sig] or {}
