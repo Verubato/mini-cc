@@ -135,8 +135,19 @@ local function EnsureCacheEntry(unit)
 	return unitGuidToSpec[guid]
 end
 
-local function Inspect(unit)
+local function Inspect(unit, inspecteeGuid)
 	local specId = GetInspectSpecialization and GetInspectSpecialization(unit)
+	-- INSPECT_READY carries the GUID the inspect data belongs to. If the token now
+	-- resolves to a different player than when NotifyInspect was issued (roster
+	-- shuffle during the up-to-10s inspect window), the data must not be cached
+	-- under the token's current GUID: db.SpecCache persists for days and feeds
+	-- KickTracker/KickTimer.
+	if inspecteeGuid and not issecretvalue(inspecteeGuid) then
+		local tokenGuid = SafeUnitGUID(unit)
+		if not tokenGuid or issecretvalue(tokenGuid) or tokenGuid ~= inspecteeGuid then
+			specId = nil
+		end
+	end
 	if specId and specId > 0 then
 		local cacheEntry = EnsureCacheEntry(unit)
 		if cacheEntry then
@@ -355,8 +366,9 @@ function M:Init()
 	local eventsFrame = CreateFrame("Frame")
 	eventsFrame:SetScript("OnEvent", function(_, event, ...)
 		if event == "INSPECT_READY" then
+			local inspecteeGuid = ...
 			if requestedUnit then
-				Inspect(requestedUnit)
+				Inspect(requestedUnit, inspecteeGuid)
 			end
 		elseif event == "GROUP_ROSTER_UPDATE" then
 			needUpdate = true
