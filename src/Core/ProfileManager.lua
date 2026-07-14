@@ -64,6 +64,19 @@ local function FireProfileChanged(name)
 	end
 end
 
+-- Brings a stored payload up to the current schema before it is applied to the
+-- live db. Unstamped payloads predate version stamping (or came from an import)
+-- and are assumed current, which matches the pre-stamping behavior.
+local function EnsurePayloadMigrated(payload)
+	if not migrator or type(payload) ~= "table" then return end
+	local current = migrator:GetSchemaVersion()
+	if payload.Version == nil then
+		payload.Version = current
+	elseif payload.Version < current then
+		migrator:MigrateProfilePayload(payload, payload.Version, db)
+	end
+end
+
 -- Saves the current live db payload into the active profile slot.
 function M:SaveCurrentProfile()
 	if not db then return end
@@ -79,6 +92,10 @@ function M:SaveCurrentProfile()
 		if db[k] ~= nil then
 			slot[k] = DeepCopy(db[k])
 		end
+	end
+	-- Stamp the schema version so future upgrades can migrate this snapshot.
+	if migrator then
+		slot.Version = migrator:GetSchemaVersion()
 	end
 	db.Profiles[name] = slot
 end
@@ -112,6 +129,9 @@ function M:CreateProfile(name, sourceName)
 		for _, k in ipairs(M.PayloadKeys) do
 			if db[k] ~= nil then snapshot[k] = DeepCopy(db[k]) end
 		end
+		if migrator then
+			snapshot.Version = migrator:GetSchemaVersion()
+		end
 		db.Profiles[name] = snapshot
 	end
 end
@@ -135,6 +155,7 @@ function M:DeleteProfile(name)
 		local remaining = M:GetProfileNames()
 		if remaining[1] then
 			local payload = db.Profiles[remaining[1]]
+			EnsurePayloadMigrated(payload)
 			for _, k in ipairs(M.PayloadKeys) do
 				if type(payload[k]) == "table" and type(db[k]) == "table" then
 					MutateTableInPlace(db[k], payload[k])
@@ -185,6 +206,7 @@ function M:SwitchProfile(name)
 	if db.ActiveProfile == name then return end
 	M:SaveCurrentProfile()
 	local payload = db.Profiles[name]
+	EnsurePayloadMigrated(payload)
 	for _, k in ipairs(M.PayloadKeys) do
 		if type(payload[k]) == "table" and type(db[k]) == "table" then
 			MutateTableInPlace(db[k], payload[k])

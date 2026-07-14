@@ -2581,6 +2581,53 @@ local function RestoreOpaqueCaches(vars, saved)
 	end
 end
 
+---Current SavedVariables schema version.
+---@return number
+function M:GetSchemaVersion()
+	return dbDefaults.Version
+end
+
+---Runs the migration chain over a stored profile payload so snapshots saved under an
+---older schema are transformed the same way the live table is, instead of re-injecting
+---obsolete keys and losing renamed settings on the next profile switch.
+---The payload is copied into a synthetic full-db-shaped table because upgrade functions
+---expect top-level context keys (WhatsNew, NotifiedChanges, retired globals like
+---IconSpacing) that payloads do not carry.
+---@param payload table profile snapshot (PayloadKeys subset, plus a Version stamp)
+---@param fromVersion number schema version the payload was saved under
+---@param liveVars table? live saved-vars used to seed retired non-payload context keys
+---@return boolean ok false when a step failed; the payload is then left unchanged
+function M:MigrateProfilePayload(payload, fromVersion, liveVars)
+	local payloadKeys = addon.Core.ProfileManager.PayloadKeys
+	local synth = {
+		Version = fromVersion,
+		WhatsNew = {},
+		NotifiedChanges = true,
+		-- Retired global consumed by v54/v55 to seed per-module icon spacing.
+		IconSpacing = liveVars and liveVars.IconSpacing,
+	}
+	for _, k in ipairs(payloadKeys) do
+		synth[k] = mini:CopyValueOrTable(payload[k])
+	end
+
+	while (synth.Version or 0) < dbDefaults.Version do
+		local upgradeFn = M["UpgradeToVersion" .. ((synth.Version or 0) + 1)]
+		if not upgradeFn then
+			return false
+		end
+		local ok, result = pcall(upgradeFn, self, synth)
+		if not ok or not result then
+			return false
+		end
+	end
+
+	for _, k in ipairs(payloadKeys) do
+		payload[k] = synth[k]
+	end
+	payload.Version = dbDefaults.Version
+	return true
+end
+
 ---@return Db
 function M:GetAndUpgradeDb()
 	local isFirstTimeSetup = MiniCCDB == nil
@@ -2596,6 +2643,7 @@ function M:GetAndUpgradeDb()
 		return M:SoftReset()
 	end
 
+	local preUpgradeVersion = vars.Version or 0
 	local isCorrupt = false
 
 	while (vars.Version or 0) < dbDefaults.Version do
@@ -2619,6 +2667,26 @@ function M:GetAndUpgradeDb()
 
 	if isCorrupt then
 		return M:SoftReset()
+	end
+
+	-- Bring stored profile snapshots up to the schema the live table now has.
+	-- Unstamped payloads were maintained by this install's SaveCurrentProfile, so
+	-- they are at the schema the db had before this chain ran (profiles cannot
+	-- predate v37, which introduced them). Runs before the final CleanTable so
+	-- retired context keys (e.g. IconSpacing) are still readable from vars.
+	if vars.Profiles then
+		for _, payload in pairs(vars.Profiles) do
+			if type(payload) == "table" then
+				local fromVersion = payload.Version or math.max(preUpgradeVersion, 37)
+				if fromVersion < dbDefaults.Version then
+					-- On failure the payload keeps its old shape (pre-fix behavior);
+					-- it must not block login.
+					M:MigrateProfilePayload(payload, fromVersion, vars)
+				else
+					payload.Version = dbDefaults.Version
+				end
+			end
+		end
 	end
 
 	-- grab any new keys
