@@ -189,7 +189,6 @@ L:RegisterLocale("ptBR", {
 	["Show defensive spell icons."] = "Mostrar ícones de feitiços defensivos.",
 	["Show interrupts"] = "Mostrar interrupções",
 	["Show an icon when a friendly unit gets interrupted."] = "Mostra um ícone quando uma unidade aliada é interrompida.",
-	["Shows CC and defensives as one set of icons on party/raid frames."] = "Mostra controle de grupo e defensivas como um único conjunto de ícones nos quadros de grupo/raide.",
 	["Tip: Disable the CC module for BGs and enable CC within this module."] = "Dica: Desative o módulo CC para Campos de Batalha e ative CC dentro deste módulo.",
 
 
@@ -228,7 +227,6 @@ L:RegisterLocale("ptBR", {
 	["Portraits"] = "Retratos",
 	["Portraits_Short"] = "Retrato",
 	["Reverses the direction of the cooldown swipe."] = "Inverte a direção do deslize da recarga.",
-	["Shows CC and defensives on the player/target/focus portraits."] = "Mostra controle de grupo e defensivas nos retratos de jogador/alvo/foco.",
 
 	-- Party Trinkets tab
 	[" - Doesn't work if your team mates trinket in the starting room."] = " - Não funciona se seus companheiros de equipe usarem berloque na sala inicial.",
@@ -263,7 +261,6 @@ L:RegisterLocale("ptBR", {
 	-- Enemy Cooldown Tracker tab
 	["Enemy Cooldowns"] = "CDs inimigos",
 	["Enemy Cooldowns_Short"] = "CDs inimigos",
-	["Shows enemy arena opponent defensive and offensive cooldowns after their buffs expire."] = "Exibe os tempos de recarga defensivos e ofensivos dos adversários de arena após seus buffs expirarem.",
 	["Display"] = "Exibição",
 	["Layout Mode"] = "Modo de layout",
 	["Mode"] = "Modo",
@@ -279,7 +276,6 @@ L:RegisterLocale("ptBR", {
 	["Reverse the cooldown swipe animation direction on icons."] = "Inverter a direção da animação de varredura de recarga nos ícones.",
 	["The display size of each cooldown icon in pixels."] = "O tamanho de exibição de cada ícone de recarga em pixels.",
 	["The spacing in pixels between each cooldown icon."] = "O espaçamento em pixels entre cada ícone de recarga.",
-	["Arena Frames: anchors icons next to each enemy's arena frame. Linear Bar: displays all cooldowns in a single combined bar. Split: shows offensive cooldowns on the linear bar and defensive cooldowns on the arena frames."] = "Quadros de Arena: ancora os ícones ao lado do quadro de arena de cada inimigo. Barra Linear: exibe todas as recargas em uma única barra combinada. Dividido: exibe recargas ofensivas na barra linear e recargas defensivas nos quadros de arena.",
 	["The direction cooldown icons grow from the arena frame anchor point."] = "A direção em que os ícones de recarga crescem a partir do ponto de ancoragem do quadro de arena.",
 	["Horizontal pixel offset from the arena frame anchor point."] = "Deslocamento horizontal em pixels a partir do ponto de ancoragem do quadro de arena.",
 	["Vertical pixel offset from the arena frame anchor point."] = "Deslocamento vertical em pixels a partir do ponto de ancoragem do quadro de arena.",
@@ -317,4 +313,24 @@ L:RegisterLocale("ptBR", {
 	["Override the addon language. By default, your game client language is used."] = "Altera o idioma do addon. Por padrão, o idioma do cliente de jogo é usado.",
 	["Auto (client language)"] = "Auto (idioma do cliente)",
 	["Language changed. Reload UI now?"] = "Idioma alterado. Recarregar a interface agora?",
+	["Shows CC and defensive auras as one set of icons on party/raid frames."] = "Mostra controle de grupo e auras defensivas como um único conjunto de ícones nos quadros de grupo/raide.",
+	["Shows CC, defensives, and other important spells on the player/target/focus portraits."] = "Mostra controle de grupo, defensivas e outros feitiços importantes nos retratos de jogador/alvo/foco.",
+	["Shows enemy arena opponent defensive cooldowns after their buffs expire."] = "Exibe os tempos de recarga defensivos dos adversários de arena após seus buffs expirarem.",
+	["Arena Frames: anchors icons next to each enemy's arena frame. Linear Bar: displays all cooldowns in a single combined bar."] = "Quadros de Arena: ancora os ícones ao lado do quadro de arena de cada inimigo. Barra Linear: exibe todas as recargas em uma única barra combinada.",
+	["A separate region for showing enemy defensive spells."] = "Uma região separada para exibir os feitiços defensivos inimigos.",
+	["Important Notes"] = "Notas importantes",
+	["Sorts party/raid/arena frames and places you at the top/middle/bottom."] = "Ordena os quadros de grupo/raide/arena e posiciona você no topo/meio/embaixo.",
+	["Shows markers above your team mates."] = "Mostra marcadores acima dos seus companheiros de equipe.",
+	["Shows overshields on frames and nameplates."] = "Mostra o excesso de escudo nos quadros e nas placas de nome.",
+	["Basically doubles your APM."] = "Basicamente dobra o seu APM.",
+	["Shows your debuffs on enemy arena frames."] = "Mostra seus debuffs nos quadros de arena inimigos.",
+	["Plays sound effects when getting killing blows."] = "Reproduz efeitos sonoros ao desferir golpes de misericórdia.",
+	["Shows fps and ping on a draggable UI element."] = "Mostra fps e ping em um elemento de interface arrastável.",
+	["Shows a draggable timer on your UI when in queue."] = "Mostra um temporizador arrastável na sua interface enquanto está na fila.",
+	["Changes your tab key to target enemy players."] = "Altera sua tecla Tab para mirar em jogadores inimigos.",
+	["Notifies you when entering or leaving combat."] = "Notifica você ao entrar ou sair de combate.",
+	["Simple personal resource-style health + power bar you can tweak."] = "Barra simples de vida + poder no estilo do recurso pessoal que você pode ajustar.",
+	["Fades out certain frames including bags, micro menu, and quest tracker."] = "Esmaece certos quadros, incluindo bolsas, micromenu e rastreador de missões.",
+	["Customize the cooldown timers."] = "Personalize os temporizadores de recarga.",
+	["Powerful icon skinning tool."] = "Ferramenta poderosa de personalização de ícones.",
 })

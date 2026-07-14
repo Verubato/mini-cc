@@ -189,7 +189,6 @@ L:RegisterLocale("frFR", {
 	["Show defensive spell icons."] = "Affiche les icônes de sorts défensifs.",
 	["Show interrupts"] = "Afficher les interruptions",
 	["Show an icon when a friendly unit gets interrupted."] = "Affiche une icône lorsqu'une unité alliée est interrompue.",
-	["Shows CC and defensives as one set of icons on party/raid frames."] = "Affiche le contrôle de foule et les défensifs comme un seul ensemble d'icônes sur les cadres de groupe/raid.",
 	["Tip: Disable the CC module for BGs and enable CC within this module."] = "Astuce : Désactivez le module CC pour les BG et activez le CC dans ce module.",
 
 	-- Healer tab
@@ -228,7 +227,6 @@ L:RegisterLocale("frFR", {
 	["Portraits"] = "Portraits",
 	["Portraits_Short"] = "Portraits",
 	["Reverses the direction of the cooldown swipe."] = "Inverse le sens de l'animation de recharge.",
-	["Shows CC and defensives on the player/target/focus portraits."] = "Affiche le contrôle de foule et les défensifs sur les portraits du joueur/de la cible/du focus.",
 
 	-- Party Trinkets tab
 	[" - Doesn't work if your team mates trinket in the starting room."] = " - Ne fonctionne pas si vos coéquipiers utilisent leur trinket dans la salle de départ.",
@@ -263,7 +261,6 @@ L:RegisterLocale("frFR", {
 	-- Enemy Cooldown Tracker tab
 	["Enemy Cooldowns"] = "CDs ennemis",
 	["Enemy Cooldowns_Short"] = "CDs ennemis",
-	["Shows enemy arena opponent defensive and offensive cooldowns after their buffs expire."] = "Affiche les CDs défensifs et offensifs des adversaires d'arène après la fin de leurs buffs.",
 	["Display"] = "Affichage",
 	["Layout Mode"] = "Mode d'affichage",
 	["Mode"] = "Mode",
@@ -279,7 +276,6 @@ L:RegisterLocale("frFR", {
 	["Reverse the cooldown swipe animation direction on icons."] = "Inverse le sens de l'animation de recharge sur les icônes.",
 	["The display size of each cooldown icon in pixels."] = "Taille de chaque icône de CD en pixels.",
 	["The spacing in pixels between each cooldown icon."] = "Espacement en pixels entre chaque icône.",
-	["Arena Frames: anchors icons next to each enemy's arena frame. Linear Bar: displays all cooldowns in a single combined bar. Split: shows offensive cooldowns on the linear bar and defensive cooldowns on the arena frames."] = "Cadres d'arène : ancre les icônes à côté de chaque cadre ennemi. Barre linéaire : affiche tous les CDs dans une seule barre combinée. Séparé : affiche les CDs offensifs sur la barre linéaire et les CDs défensifs sur les cadres d'arène.",
 	["The direction cooldown icons grow from the arena frame anchor point."] = "Direction dans laquelle les icônes s'étendent depuis le point d'ancrage.",
 	["Horizontal pixel offset from the arena frame anchor point."] = "Décalage horizontal en pixels depuis le point d'ancrage.",
 	["Vertical pixel offset from the arena frame anchor point."] = "Décalage vertical en pixels depuis le point d'ancrage.",
@@ -317,4 +313,24 @@ L:RegisterLocale("frFR", {
 	["Override the addon language. By default, your game client language is used."] = "Remplace la langue de l'addon. Par défaut, la langue de votre client de jeu est utilisée.",
 	["Auto (client language)"] = "Auto (langue du client)",
 	["Language changed. Reload UI now?"] = "Langue modifiée. Recharger l'interface maintenant ?",
+	["Shows CC and defensive auras as one set of icons on party/raid frames."] = "Affiche le contrôle de foule et les auras défensives comme un seul ensemble d'icônes sur les cadres de groupe/raid.",
+	["Shows CC, defensives, and other important spells on the player/target/focus portraits."] = "Affiche le contrôle de foule, les défensifs et d'autres sorts importants sur les portraits du joueur/de la cible/du focus.",
+	["Shows enemy arena opponent defensive cooldowns after their buffs expire."] = "Affiche les CDs défensifs des adversaires d'arène après la fin de leurs buffs.",
+	["Arena Frames: anchors icons next to each enemy's arena frame. Linear Bar: displays all cooldowns in a single combined bar."] = "Cadres d'arène : ancre les icônes à côté de chaque cadre ennemi. Barre linéaire : affiche tous les CDs dans une seule barre combinée.",
+	["A separate region for showing enemy defensive spells."] = "Une zone dédiée à l'affichage des sorts défensifs ennemis.",
+	["Important Notes"] = "Remarques importantes",
+	["Sorts party/raid/arena frames and places you at the top/middle/bottom."] = "Trie les cadres de groupe/raid/arène et vous place en haut/au milieu/en bas.",
+	["Shows markers above your team mates."] = "Affiche des marqueurs au-dessus de vos coéquipiers.",
+	["Shows overshields on frames and nameplates."] = "Affiche les boucliers excédentaires sur les cadres et les nameplates.",
+	["Basically doubles your APM."] = "Double quasiment votre APM.",
+	["Shows your debuffs on enemy arena frames."] = "Affiche vos débuffs sur les cadres d'arène ennemis.",
+	["Plays sound effects when getting killing blows."] = "Joue des effets sonores lorsque vous portez des coups fatals.",
+	["Shows fps and ping on a draggable UI element."] = "Affiche les fps et le ping sur un élément d'interface déplaçable.",
+	["Shows a draggable timer on your UI when in queue."] = "Affiche un chrono déplaçable sur votre interface pendant la file d'attente.",
+	["Changes your tab key to target enemy players."] = "Modifie votre touche Tab pour cibler les joueurs ennemis.",
+	["Notifies you when entering or leaving combat."] = "Vous avertit quand vous entrez ou sortez du combat.",
+	["Simple personal resource-style health + power bar you can tweak."] = "Barre de vie + ressource simple, façon ressource personnelle, que vous pouvez ajuster.",
+	["Fades out certain frames including bags, micro menu, and quest tracker."] = "Estompe certains cadres, dont les sacs, le micro-menu et le suivi des quêtes.",
+	["Customize the cooldown timers."] = "Personnalisez les compteurs de recharge.",
+	["Powerful icon skinning tool."] = "Puissant outil de personnalisation des icônes.",
 })

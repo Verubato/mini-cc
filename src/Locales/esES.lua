@@ -189,7 +189,6 @@ L:RegisterLocale("esES", {
 	["Show defensive spell icons."] = "Mostrar iconos de hechizos defensivos.",
 	["Show interrupts"] = "Mostrar interrupciones",
 	["Show an icon when a friendly unit gets interrupted."] = "Muestra un icono cuando una unidad aliada es interrumpida.",
-	["Shows CC and defensives as one set of icons on party/raid frames."] = "Muestra control de masas y defensivos como un solo conjunto de iconos en los marcos de grupo/banda.",
 	["Tip: Disable the CC module for BGs and enable CC within this module."] = "Consejo: Desactiva el módulo CC para Campos de Batalla y activa CC en este módulo.",
 
 	-- Healer tab
@@ -227,7 +226,6 @@ L:RegisterLocale("esES", {
 	["Portraits"] = "Retratos",
 	["Portraits_Short"] = "Retrato",
 	["Reverses the direction of the cooldown swipe."] = "Invierte la dirección del barrido del tiempo de reutilización.",
-	["Shows CC and defensives on the player/target/focus portraits."] = "Muestra control de masas y defensivos en los retratos de jugador/objetivo/foco.",
 
 	-- Party Trinkets tab
 	[" - Doesn't work if your team mates trinket in the starting room."] = " - No funciona si tus compañeros de equipo usan abalorios en la sala de inicio.",
@@ -262,7 +260,6 @@ L:RegisterLocale("esES", {
 	-- Enemy Cooldown Tracker tab
 	["Enemy Cooldowns"] = "CDs enemigos",
 	["Enemy Cooldowns_Short"] = "CDs enemigos",
-	["Shows enemy arena opponent defensive and offensive cooldowns after their buffs expire."] = "Muestra los tiempos de reutilización defensivos y ofensivos de los adversarios de arena tras expirar sus efectos positivos.",
 	["Display"] = "Mostrar",
 	["Layout Mode"] = "Modo de disposición",
 	["Mode"] = "Modo",
@@ -278,7 +275,6 @@ L:RegisterLocale("esES", {
 	["Reverse the cooldown swipe animation direction on icons."] = "Invertir la dirección de la animación de barrido del tiempo de reutilización en los iconos.",
 	["The display size of each cooldown icon in pixels."] = "El tamaño de visualización de cada icono de tiempo de reutilización en píxeles.",
 	["The spacing in pixels between each cooldown icon."] = "El espaciado en píxeles entre cada icono de tiempo de reutilización.",
-	["Arena Frames: anchors icons next to each enemy's arena frame. Linear Bar: displays all cooldowns in a single combined bar. Split: shows offensive cooldowns on the linear bar and defensive cooldowns on the arena frames."] = "Marcos de arena: ancla los iconos junto al marco de arena de cada enemigo. Barra lineal: muestra todos los tiempos de reutilización en una barra combinada. Dividido: muestra los tiempos de reutilización ofensivos en la barra lineal y los defensivos en los marcos de arena.",
 	["The direction cooldown icons grow from the arena frame anchor point."] = "La dirección en que los iconos de tiempo de reutilización crecen desde el punto de anclaje del marco de arena.",
 	["Horizontal pixel offset from the arena frame anchor point."] = "Desplazamiento horizontal en píxeles desde el punto de anclaje del marco de arena.",
 	["Vertical pixel offset from the arena frame anchor point."] = "Desplazamiento vertical en píxeles desde el punto de anclaje del marco de arena.",
@@ -318,4 +314,24 @@ L:RegisterLocale("esES", {
 	["Override the addon language. By default, your game client language is used."] = "Cambia el idioma del addon. Por defecto se usa el idioma del cliente de juego.",
 	["Auto (client language)"] = "Auto (idioma del cliente)",
 	["Language changed. Reload UI now?"] = "Idioma cambiado. ¿Recargar la interfaz ahora?",
+	["Shows CC and defensive auras as one set of icons on party/raid frames."] = "Muestra control de masas y auras defensivas como un solo conjunto de iconos en los marcos de grupo/banda.",
+	["Shows CC, defensives, and other important spells on the player/target/focus portraits."] = "Muestra control de masas, defensivos y otros hechizos importantes en los retratos de jugador/objetivo/foco.",
+	["Shows enemy arena opponent defensive cooldowns after their buffs expire."] = "Muestra los tiempos de reutilización defensivos de los adversarios de arena tras expirar sus efectos positivos.",
+	["Arena Frames: anchors icons next to each enemy's arena frame. Linear Bar: displays all cooldowns in a single combined bar."] = "Marcos de arena: ancla los iconos junto al marco de arena de cada enemigo. Barra lineal: muestra todos los tiempos de reutilización en una barra combinada.",
+	["A separate region for showing enemy defensive spells."] = "Una región separada para mostrar los hechizos defensivos del enemigo.",
+	["Important Notes"] = "Notas importantes",
+	["Sorts party/raid/arena frames and places you at the top/middle/bottom."] = "Ordena los marcos de grupo/banda/arena y te coloca arriba/en medio/abajo.",
+	["Shows markers above your team mates."] = "Muestra marcadores sobre tus compañeros de equipo.",
+	["Shows overshields on frames and nameplates."] = "Muestra el exceso de escudo en los marcos y las placas de nombre.",
+	["Basically doubles your APM."] = "Básicamente duplica tu APM.",
+	["Shows your debuffs on enemy arena frames."] = "Muestra tus penalizaciones en los marcos de arena enemigos.",
+	["Plays sound effects when getting killing blows."] = "Reproduce efectos de sonido al asestar golpes de gracia.",
+	["Shows fps and ping on a draggable UI element."] = "Muestra los fps y el ping en un elemento de interfaz arrastrable.",
+	["Shows a draggable timer on your UI when in queue."] = "Muestra un temporizador arrastrable en tu interfaz mientras estás en cola.",
+	["Changes your tab key to target enemy players."] = "Cambia tu tecla Tab para fijar como objetivo a jugadores enemigos.",
+	["Notifies you when entering or leaving combat."] = "Te avisa al entrar o salir de combate.",
+	["Simple personal resource-style health + power bar you can tweak."] = "Barra simple de salud + poder al estilo del recurso personal que puedes ajustar.",
+	["Fades out certain frames including bags, micro menu, and quest tracker."] = "Atenúa ciertos marcos, incluidos las bolsas, el micromenú y el rastreador de misiones.",
+	["Customize the cooldown timers."] = "Personaliza los temporizadores de reutilización.",
+	["Powerful icon skinning tool."] = "Potente herramienta para personalizar el aspecto de los iconos.",
 })

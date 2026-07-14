@@ -189,7 +189,6 @@ L:RegisterLocale("deDE", {
 	["Show defensive spell icons."] = "Symbole für defensive Zauber anzeigen.",
 	["Show interrupts"] = "Unterbrechungen anzeigen",
 	["Show an icon when a friendly unit gets interrupted."] = "Zeigt ein Symbol an, wenn eine befreundete Einheit unterbrochen wird.",
-	["Shows CC and defensives as one set of icons on party/raid frames."] = "Zeigt CC und Defensives als einen Satz Symbole auf Gruppen-/Schlachtzugs-Rahmen.",
 	["Tip: Disable the CC module for BGs and enable CC within this module."] = "Tipp: Deaktiviere das CC-Modul für Schlachtfelder und aktiviere CC in diesem Modul.",
 
 	-- Healer tab
@@ -227,7 +226,6 @@ L:RegisterLocale("deDE", {
 	["Portraits"] = "Porträts",
 	["Portraits_Short"] = "Porträt",
 	["Reverses the direction of the cooldown swipe."] = "Kehrt die Richtung des Abklingzeit-Wischens um.",
-	["Shows CC and defensives on the player/target/focus portraits."] = "Zeigt Massenkontrolle und Defensives auf Spieler-/Ziel-/Fokus-Porträts.",
 
 	-- Party Trinkets tab
 	[" - Doesn't work if your team mates trinket in the starting room."] = " - Funktioniert nicht, wenn deine Teamkollegen Schmuckstücke im Startraum verwenden.",
@@ -262,7 +260,6 @@ L:RegisterLocale("deDE", {
 	-- Enemy Cooldown Tracker tab
 	["Enemy Cooldowns"] = "Gegner-Abklingzeiten",
 	["Enemy Cooldowns_Short"] = "Gegner-CDs",
-	["Shows enemy arena opponent defensive and offensive cooldowns after their buffs expire."] = "Zeigt defensive und offensive Abklingzeiten der Arena-Gegner an, nachdem deren Buffs ablaufen.",
 	["Display"] = "Anzeige",
 	["Layout Mode"] = "Layout-Modus",
 	["Mode"] = "Modus",
@@ -278,7 +275,6 @@ L:RegisterLocale("deDE", {
 	["Reverse the cooldown swipe animation direction on icons."] = "Richtung der Abklingzeit-Wischanimation auf Symbolen umkehren.",
 	["The display size of each cooldown icon in pixels."] = "Die Anzeigestärke jedes Abklingzeit-Symbols in Pixeln.",
 	["The spacing in pixels between each cooldown icon."] = "Der Abstand in Pixeln zwischen jedem Abklingzeit-Symbol.",
-	["Arena Frames: anchors icons next to each enemy's arena frame. Linear Bar: displays all cooldowns in a single combined bar. Split: shows offensive cooldowns on the linear bar and defensive cooldowns on the arena frames."] = "Arena-Rahmen: Symbole neben jedem Gegner-Arena-Rahmen verankern. Lineare Leiste: Alle Abklingzeiten in einer kombinierten Leiste anzeigen. Geteilt: Zeigt offensive Abklingzeiten auf der linearen Leiste und defensive Abklingzeiten an den Arena-Rahmen.",
 	["The direction cooldown icons grow from the arena frame anchor point."] = "Die Richtung, in die Abklingzeit-Symbole vom Arena-Rahmen-Ankerpunkt wachsen.",
 	["Horizontal pixel offset from the arena frame anchor point."] = "Horizontaler Pixel-Versatz vom Arena-Rahmen-Ankerpunkt.",
 	["Vertical pixel offset from the arena frame anchor point."] = "Vertikaler Pixel-Versatz vom Arena-Rahmen-Ankerpunkt.",
@@ -318,4 +314,24 @@ L:RegisterLocale("deDE", {
 	["Override the addon language. By default, your game client language is used."] = "Überschreibt die Addon-Sprache. Standardmäßig wird die Sprache deines Spielclients verwendet.",
 	["Auto (client language)"] = "Auto (Client-Sprache)",
 	["Language changed. Reload UI now?"] = "Sprache geändert. Benutzeroberfläche jetzt neu laden?",
+	["Shows CC and defensive auras as one set of icons on party/raid frames."] = "Zeigt CC- und Defensiv-Auren als einen Satz Symbole auf Gruppen-/Schlachtzugs-Rahmen.",
+	["Shows CC, defensives, and other important spells on the player/target/focus portraits."] = "Zeigt Massenkontrolle, Defensives und andere wichtige Zauber auf Spieler-/Ziel-/Fokus-Porträts.",
+	["Shows enemy arena opponent defensive cooldowns after their buffs expire."] = "Zeigt defensive Abklingzeiten der Arena-Gegner an, nachdem deren Buffs ablaufen.",
+	["Arena Frames: anchors icons next to each enemy's arena frame. Linear Bar: displays all cooldowns in a single combined bar."] = "Arena-Rahmen: Symbole neben jedem Gegner-Arena-Rahmen verankern. Lineare Leiste: Alle Abklingzeiten in einer kombinierten Leiste anzeigen.",
+	["A separate region for showing enemy defensive spells."] = "Ein separater Bereich zum Anzeigen gegnerischer defensiver Zauber.",
+	["Important Notes"] = "Wichtige Hinweise",
+	["Sorts party/raid/arena frames and places you at the top/middle/bottom."] = "Sortiert Gruppen-/Schlachtzugs-/Arena-Rahmen und platziert dich oben/in der Mitte/unten.",
+	["Shows markers above your team mates."] = "Zeigt Markierungen über deinen Teamkollegen.",
+	["Shows overshields on frames and nameplates."] = "Zeigt überschüssige Schilde auf Rahmen und Namensplaketten.",
+	["Basically doubles your APM."] = "Verdoppelt praktisch deine APM.",
+	["Shows your debuffs on enemy arena frames."] = "Zeigt deine Debuffs auf gegnerischen Arena-Rahmen.",
+	["Plays sound effects when getting killing blows."] = "Spielt Soundeffekte ab, wenn du Todesstöße erzielst.",
+	["Shows fps and ping on a draggable UI element."] = "Zeigt fps und Ping auf einem verschiebbaren UI-Element.",
+	["Shows a draggable timer on your UI when in queue."] = "Zeigt einen verschiebbaren Timer auf deiner Benutzeroberfläche, während du in der Warteschlange bist.",
+	["Changes your tab key to target enemy players."] = "Ändert deine Tab-Taste, um feindliche Spieler anzuvisieren.",
+	["Notifies you when entering or leaving combat."] = "Benachrichtigt dich beim Betreten oder Verlassen des Kampfes.",
+	["Simple personal resource-style health + power bar you can tweak."] = "Einfache Lebens- und Ressourcenleiste im Stil der persönlichen Ressourcenanzeige, die du anpassen kannst.",
+	["Fades out certain frames including bags, micro menu, and quest tracker."] = "Blendet bestimmte Rahmen aus, darunter Taschen, Mikromenü und Questverfolgung.",
+	["Customize the cooldown timers."] = "Passe die Abklingzeit-Timer an.",
+	["Powerful icon skinning tool."] = "Leistungsstarkes Symbol-Skinning-Werkzeug.",
 })

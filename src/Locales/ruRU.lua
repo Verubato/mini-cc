@@ -189,7 +189,6 @@ L:RegisterLocale("ruRU", {
 	["Show defensive spell icons."] = "Показывать иконки защитных заклинаний.",
 	["Show interrupts"] = "Показать прерывания",
 	["Show an icon when a friendly unit gets interrupted."] = "Показывает иконку, когда дружественный персонаж прерывается.",
-	["Shows CC and defensives as one set of icons on party/raid frames."] = "Показывает контроль и защиту единым набором значков на рамках группы/рейда.",
 	["Tip: Disable the CC module for BGs and enable CC within this module."] = "Совет: отключите модуль контроля для полей боя и включите контроль в этом модуле.",
 
 
@@ -228,7 +227,6 @@ L:RegisterLocale("ruRU", {
 	["Portraits"] = "Портреты",
 	["Portraits_Short"] = "Портрет",
 	["Reverses the direction of the cooldown swipe."] = "Изменяет направление смахивания перезарядки.",
-	["Shows CC and defensives on the player/target/focus portraits."] = "Показывает контроль и защиту на портретах игрока/цели/фокуса.",
 
 	-- Party Trinkets tab
 	[" - Doesn't work if your team mates trinket in the starting room."] = " - Не работает, если ваши союзники используют аксессуар в стартовой комнате.",
@@ -263,7 +261,6 @@ L:RegisterLocale("ruRU", {
 	-- Enemy Cooldown Tracker tab
 	["Enemy Cooldowns"] = "КД противников",
 	["Enemy Cooldowns_Short"] = "КД противников",
-	["Shows enemy arena opponent defensive and offensive cooldowns after their buffs expire."] = "Отображает откаты защитных и наступательных способностей противников на арене после истечения их баффов.",
 	["Display"] = "Отображение",
 	["Layout Mode"] = "Режим расположения",
 	["Mode"] = "Режим",
@@ -279,7 +276,6 @@ L:RegisterLocale("ruRU", {
 	["Reverse the cooldown swipe animation direction on icons."] = "Изменить направление анимации смахивания перезарядки на иконках.",
 	["The display size of each cooldown icon in pixels."] = "Размер отображения каждой иконки перезарядки в пикселях.",
 	["The spacing in pixels between each cooldown icon."] = "Расстояние в пикселях между каждой иконкой перезарядки.",
-	["Arena Frames: anchors icons next to each enemy's arena frame. Linear Bar: displays all cooldowns in a single combined bar. Split: shows offensive cooldowns on the linear bar and defensive cooldowns on the arena frames."] = "Рамки арены: привязывает иконки рядом с рамкой арены каждого врага. Линейная полоса: отображает все перезарядки в одной объединённой полосе. Раздельно: показывает атакующие перезарядки на линейной полосе, а защитные — на рамках арены.",
 	["The direction cooldown icons grow from the arena frame anchor point."] = "Направление роста иконок перезарядки от точки привязки рамки арены.",
 	["Horizontal pixel offset from the arena frame anchor point."] = "Горизонтальное смещение в пикселях от точки привязки рамки арены.",
 	["Vertical pixel offset from the arena frame anchor point."] = "Вертикальное смещение в пикселях от точки привязки рамки арены.",
@@ -319,4 +315,24 @@ L:RegisterLocale("ruRU", {
 	["Override the addon language. By default, your game client language is used."] = "Изменяет язык аддона. По умолчанию используется язык игрового клиента.",
 	["Auto (client language)"] = "Авто (язык клиента)",
 	["Language changed. Reload UI now?"] = "Язык изменён. Перезагрузить интерфейс сейчас?",
+	["Shows CC and defensive auras as one set of icons on party/raid frames."] = "Показывает контроль и защитные ауры единым набором значков на рамках группы/рейда.",
+	["Shows CC, defensives, and other important spells on the player/target/focus portraits."] = "Показывает контроль, защитные и другие важные заклинания на портретах игрока/цели/фокуса.",
+	["Shows enemy arena opponent defensive cooldowns after their buffs expire."] = "Отображает откаты защитных способностей противников на арене после истечения их баффов.",
+	["Arena Frames: anchors icons next to each enemy's arena frame. Linear Bar: displays all cooldowns in a single combined bar."] = "Рамки арены: привязывает иконки рядом с рамкой арены каждого врага. Линейная полоса: отображает все перезарядки в одной объединённой полосе.",
+	["A separate region for showing enemy defensive spells."] = "Отдельная область для отображения защитных заклинаний противника.",
+	["Important Notes"] = "Важные примечания",
+	["Sorts party/raid/arena frames and places you at the top/middle/bottom."] = "Сортирует рамки группы/рейда/арены и размещает вас сверху/в середине/снизу.",
+	["Shows markers above your team mates."] = "Показывает метки над вашими товарищами по команде.",
+	["Shows overshields on frames and nameplates."] = "Показывает избыток щитов на рамках и полосках имён.",
+	["Basically doubles your APM."] = "Фактически удваивает ваш APM.",
+	["Shows your debuffs on enemy arena frames."] = "Показывает ваши дебаффы на рамках арены противников.",
+	["Plays sound effects when getting killing blows."] = "Воспроизводит звуковые эффекты при смертельных ударах.",
+	["Shows fps and ping on a draggable UI element."] = "Показывает fps и пинг на перемещаемом элементе интерфейса.",
+	["Shows a draggable timer on your UI when in queue."] = "Показывает перемещаемый таймер в интерфейсе, пока вы в очереди.",
+	["Changes your tab key to target enemy players."] = "Меняет клавишу Tab так, чтобы выбирать целью вражеских игроков.",
+	["Notifies you when entering or leaving combat."] = "Уведомляет вас при входе в бой и выходе из него.",
+	["Simple personal resource-style health + power bar you can tweak."] = "Простая полоса здоровья + ресурса в стиле личного ресурса, которую можно настроить.",
+	["Fades out certain frames including bags, micro menu, and quest tracker."] = "Затеняет некоторые рамки, включая сумки, микроменю и отслеживание заданий.",
+	["Customize the cooldown timers."] = "Настройте таймеры перезарядки.",
+	["Powerful icon skinning tool."] = "Мощный инструмент оформления иконок.",
 })

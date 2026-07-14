@@ -189,7 +189,6 @@ L:RegisterLocale("zhTW", {
 	["Show defensive spell icons."] = "顯示防禦法術圖示。",
 	["Show interrupts"] = "顯示打斷",
 	["Show an icon when a friendly unit gets interrupted."] = "當友方單位被打斷時顯示圖示。",
-	["Shows CC and defensives as one set of icons on party/raid frames."] = "在小隊/團隊框架上將控制和防禦顯示為一組圖示。",
 	["Tip: Disable the CC module for BGs and enable CC within this module."] = "提示：在戰場中停用CC模組，並在此模組中啟用CC。",
 
 
@@ -228,7 +227,6 @@ L:RegisterLocale("zhTW", {
 	["Portraits"] = "頭像",
 	["Portraits_Short"] = "頭像",
 	["Reverses the direction of the cooldown swipe."] = "反轉冷卻時間滑動動畫的方向。",
-	["Shows CC and defensives on the player/target/focus portraits."] = "在玩家/目標/專注目標頭像上顯示控制和防禦。",
 
 	-- Party Trinkets tab
 	[" - Doesn't work if your team mates trinket in the starting room."] = " - 如果隊友在起始房間使用飾品則無效。",
@@ -263,7 +261,6 @@ L:RegisterLocale("zhTW", {
 	-- Enemy Cooldown Tracker tab
 	["Enemy Cooldowns"] = "敵方冷卻",
 	["Enemy Cooldowns_Short"] = "敵方冷卻",
-	["Shows enemy arena opponent defensive and offensive cooldowns after their buffs expire."] = "在敵方競技場對手的增益效果消失後，顯示其防禦性和進攻性冷卻時間。",
 	["Display"] = "顯示",
 	["Layout Mode"] = "版面模式",
 	["Mode"] = "模式",
@@ -279,7 +276,6 @@ L:RegisterLocale("zhTW", {
 	["Reverse the cooldown swipe animation direction on icons."] = "反轉圖示上冷卻掃描動畫的方向。",
 	["The display size of each cooldown icon in pixels."] = "每個冷卻圖示的顯示尺寸（像素）。",
 	["The spacing in pixels between each cooldown icon."] = "每個冷卻圖示之間的間距（像素）。",
-	["Arena Frames: anchors icons next to each enemy's arena frame. Linear Bar: displays all cooldowns in a single combined bar. Split: shows offensive cooldowns on the linear bar and defensive cooldowns on the arena frames."] = "競技場框架：將圖示固定在每個敵人的競技場框架旁邊。線性條：在單個組合條中顯示所有冷卻。分離：在線性條上顯示進攻冷卻，在競技場框架上顯示防禦冷卻。",
 	["The direction cooldown icons grow from the arena frame anchor point."] = "冷卻圖示從競技場框架錨點增長的方向。",
 	["Horizontal pixel offset from the arena frame anchor point."] = "距競技場框架錨點的水平像素偏移。",
 	["Vertical pixel offset from the arena frame anchor point."] = "距競技場框架錨點的垂直像素偏移。",
@@ -319,4 +315,24 @@ L:RegisterLocale("zhTW", {
 	["Override the addon language. By default, your game client language is used."] = "覆蓋插件語言。預設使用遊戲客戶端語言。",
 	["Auto (client language)"] = "自動（客戶端語言）",
 	["Language changed. Reload UI now?"] = "語言已變更。立即重新載入介面嗎？",
+	["Shows CC and defensive auras as one set of icons on party/raid frames."] = "在小隊/團隊框架上將控制和防禦光環顯示為一組圖示。",
+	["Shows CC, defensives, and other important spells on the player/target/focus portraits."] = "在玩家/目標/專注目標頭像上顯示控制、防禦和其他重要法術。",
+	["Shows enemy arena opponent defensive cooldowns after their buffs expire."] = "在敵方競技場對手的增益效果消失後，顯示其防禦性冷卻時間。",
+	["Arena Frames: anchors icons next to each enemy's arena frame. Linear Bar: displays all cooldowns in a single combined bar."] = "競技場框架：將圖示固定在每個敵人的競技場框架旁邊。線性條：在單個組合條中顯示所有冷卻。",
+	["A separate region for showing enemy defensive spells."] = "用於顯示敵方防禦法術的獨立區域。",
+	["Important Notes"] = "重要說明",
+	["Sorts party/raid/arena frames and places you at the top/middle/bottom."] = "對小隊/團隊/競技場框架進行排序，並將你置於頂部/中間/底部。",
+	["Shows markers above your team mates."] = "在隊友頭頂顯示標記。",
+	["Shows overshields on frames and nameplates."] = "在框架和名條上顯示過量護盾。",
+	["Basically doubles your APM."] = "基本上讓你的APM翻倍。",
+	["Shows your debuffs on enemy arena frames."] = "在敵方競技場框架上顯示你的減益效果。",
+	["Plays sound effects when getting killing blows."] = "取得致命一擊時播放音效。",
+	["Shows fps and ping on a draggable UI element."] = "在可拖曳的UI元素上顯示fps和延遲。",
+	["Shows a draggable timer on your UI when in queue."] = "排隊時在介面上顯示可拖曳的計時器。",
+	["Changes your tab key to target enemy players."] = "將Tab鍵改為選取敵方玩家為目標。",
+	["Notifies you when entering or leaving combat."] = "在進入或離開戰鬥時通知你。",
+	["Simple personal resource-style health + power bar you can tweak."] = "簡單的個人資源風格生命值+能量條，可自行調整。",
+	["Fades out certain frames including bags, micro menu, and quest tracker."] = "淡出某些框架，包括背包、微型選單和任務追蹤器。",
+	["Customize the cooldown timers."] = "自訂冷卻時間計時器。",
+	["Powerful icon skinning tool."] = "強大的圖示美化工具。",
 })

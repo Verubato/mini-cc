@@ -189,7 +189,6 @@ L:RegisterLocale("itIT", {
 	["Show defensive spell icons."] = "Mostra le icone degli incantesimi difensivi.",
 	["Show interrupts"] = "Mostra interruzioni",
 	["Show an icon when a friendly unit gets interrupted."] = "Mostra un'icona quando un'unità alleata viene interrotta.",
-	["Shows CC and defensives as one set of icons on party/raid frames."] = "Mostra controllo della folla e difensivi come un unico set di icone sui riquadri di gruppo/raid.",
 	["Tip: Disable the CC module for BGs and enable CC within this module."] = "Consiglio: Disabilita il modulo CC per i campi di battaglia e abilita il CC in questo modulo.",
 
 	-- Healer tab
@@ -227,7 +226,6 @@ L:RegisterLocale("itIT", {
 	["Portraits"] = "Ritratti",
 	["Portraits_Short"] = "Ritratto",
 	["Reverses the direction of the cooldown swipe."] = "Inverte la direzione dello scorrimento della ricarica.",
-	["Shows CC and defensives on the player/target/focus portraits."] = "Mostra controllo della folla e difensivi sui ritratti di giocatore/bersaglio/focus.",
 
 	-- Party Trinkets tab
 	[" - Doesn't work if your team mates trinket in the starting room."] = " - Non funziona se i tuoi compagni di squadra usano il monile nella stanza di partenza.",
@@ -262,7 +260,6 @@ L:RegisterLocale("itIT", {
 	-- Enemy Cooldown Tracker tab
 	["Enemy Cooldowns"] = "CD nemici",
 	["Enemy Cooldowns_Short"] = "CD nemici",
-	["Shows enemy arena opponent defensive and offensive cooldowns after their buffs expire."] = "Mostra i tempi di recupero difensivi e offensivi degli avversari nell'arena dopo la scadenza dei loro buff.",
 	["Display"] = "Visualizzazione",
 	["Layout Mode"] = "Modalità di layout",
 	["Mode"] = "Modalità",
@@ -278,7 +275,6 @@ L:RegisterLocale("itIT", {
 	["Reverse the cooldown swipe animation direction on icons."] = "Inverti la direzione dell'animazione di scorrimento del tempo di recupero sulle icone.",
 	["The display size of each cooldown icon in pixels."] = "La dimensione di visualizzazione di ogni icona del tempo di recupero in pixel.",
 	["The spacing in pixels between each cooldown icon."] = "La spaziatura in pixel tra ogni icona del tempo di recupero.",
-	["Arena Frames: anchors icons next to each enemy's arena frame. Linear Bar: displays all cooldowns in a single combined bar. Split: shows offensive cooldowns on the linear bar and defensive cooldowns on the arena frames."] = "Riquadri Arena: ancora le icone accanto al riquadro arena di ogni nemico. Barra Lineare: mostra tutti i tempi di recupero in una singola barra combinata. Diviso: mostra i tempi di recupero offensivi sulla barra lineare e quelli difensivi sui riquadri arena.",
 	["The direction cooldown icons grow from the arena frame anchor point."] = "La direzione in cui le icone del tempo di recupero crescono dal punto di ancoraggio del riquadro arena.",
 	["Horizontal pixel offset from the arena frame anchor point."] = "Offset orizzontale in pixel dal punto di ancoraggio del riquadro arena.",
 	["Vertical pixel offset from the arena frame anchor point."] = "Offset verticale in pixel dal punto di ancoraggio del riquadro arena.",
@@ -316,4 +312,24 @@ L:RegisterLocale("itIT", {
 	["Override the addon language. By default, your game client language is used."] = "Cambia la lingua dell'addon. Per impostazione predefinita viene usata la lingua del client di gioco.",
 	["Auto (client language)"] = "Auto (lingua del client)",
 	["Language changed. Reload UI now?"] = "Lingua cambiata. Ricaricare l'interfaccia adesso?",
+	["Shows CC and defensive auras as one set of icons on party/raid frames."] = "Mostra controllo della folla e aure difensive come un unico set di icone sui riquadri di gruppo/raid.",
+	["Shows CC, defensives, and other important spells on the player/target/focus portraits."] = "Mostra controllo della folla, difensivi e altri incantesimi importanti sui ritratti di giocatore/bersaglio/focus.",
+	["Shows enemy arena opponent defensive cooldowns after their buffs expire."] = "Mostra i tempi di recupero difensivi degli avversari nell'arena dopo la scadenza dei loro buff.",
+	["Arena Frames: anchors icons next to each enemy's arena frame. Linear Bar: displays all cooldowns in a single combined bar."] = "Riquadri Arena: ancora le icone accanto al riquadro arena di ogni nemico. Barra Lineare: mostra tutti i tempi di recupero in una singola barra combinata.",
+	["A separate region for showing enemy defensive spells."] = "Una regione separata per mostrare gli incantesimi difensivi dei nemici.",
+	["Important Notes"] = "Note importanti",
+	["Sorts party/raid/arena frames and places you at the top/middle/bottom."] = "Ordina i riquadri di gruppo/incursione/arena e ti posiziona in alto/al centro/in basso.",
+	["Shows markers above your team mates."] = "Mostra indicatori sopra i tuoi compagni di squadra.",
+	["Shows overshields on frames and nameplates."] = "Mostra gli scudi in eccesso su riquadri e targhette.",
+	["Basically doubles your APM."] = "Praticamente raddoppia il tuo APM.",
+	["Shows your debuffs on enemy arena frames."] = "Mostra i tuoi debuff sui riquadri arena nemici.",
+	["Plays sound effects when getting killing blows."] = "Riproduce effetti sonori quando metti a segno colpi mortali.",
+	["Shows fps and ping on a draggable UI element."] = "Mostra fps e ping su un elemento dell'interfaccia trascinabile.",
+	["Shows a draggable timer on your UI when in queue."] = "Mostra un timer trascinabile sull'interfaccia mentre sei in coda.",
+	["Changes your tab key to target enemy players."] = "Cambia il tasto Tab per bersagliare i giocatori nemici.",
+	["Notifies you when entering or leaving combat."] = "Ti avvisa quando entri o esci dal combattimento.",
+	["Simple personal resource-style health + power bar you can tweak."] = "Semplice barra di salute + potere in stile risorsa personale che puoi personalizzare.",
+	["Fades out certain frames including bags, micro menu, and quest tracker."] = "Dissolve alcuni riquadri, tra cui borse, micro menu e tracciamento delle missioni.",
+	["Customize the cooldown timers."] = "Personalizza i timer di recupero.",
+	["Powerful icon skinning tool."] = "Potente strumento di personalizzazione delle icone.",
 })

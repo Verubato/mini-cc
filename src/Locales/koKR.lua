@@ -189,7 +189,6 @@ L:RegisterLocale("koKR", {
 	["Show defensive spell icons."] = "방어 주문 아이콘을 표시합니다.",
 	["Show interrupts"] = "차단 표시",
 	["Show an icon when a friendly unit gets interrupted."] = "아군 유닛이 차단당할 때 아이콘을 표시합니다.",
-	["Shows CC and defensives as one set of icons on party/raid frames."] = "군중 제어와 방어 효과를 파티/공격대 프레임에 하나의 아이콘 세트로 표시합니다.",
 	["Tip: Disable the CC module for BGs and enable CC within this module."] = "팁: 전장에서 CC 모듈을 비활성화하고 이 모듈 내에서 CC를 활성화하십시오.",
 
 	-- Healer tab
@@ -227,7 +226,6 @@ L:RegisterLocale("koKR", {
 	["Portraits"] = "초상화",
 	["Portraits_Short"] = "초상화",
 	["Reverses the direction of the cooldown swipe."] = "재사용 대기시간 스와이프 방향을 반대로 합니다.",
-	["Shows CC and defensives on the player/target/focus portraits."] = "플레이어/대상/주시 대상 초상화에 군중 제어와 방어 효과를 표시합니다.",
 
 	-- Party Trinkets tab
 	[" - Doesn't work if your team mates trinket in the starting room."] = " - 팀원이 시작 방에서 장신구를 사용하면 작동하지 않습니다.",
@@ -262,7 +260,6 @@ L:RegisterLocale("koKR", {
 	-- Enemy Cooldown Tracker tab
 	["Enemy Cooldowns"] = "적 쿨다운",
 	["Enemy Cooldowns_Short"] = "적 쿨다운",
-	["Shows enemy arena opponent defensive and offensive cooldowns after their buffs expire."] = "버프가 만료된 후 적 투기장 상대의 방어 및 공격 재사용 대기시간을 표시합니다.",
 	["Display"] = "표시",
 	["Layout Mode"] = "레이아웃 모드",
 	["Mode"] = "모드",
@@ -278,7 +275,6 @@ L:RegisterLocale("koKR", {
 	["Reverse the cooldown swipe animation direction on icons."] = "아이콘의 쿨다운 스와이프 애니메이션 방향을 반전합니다.",
 	["The display size of each cooldown icon in pixels."] = "각 쿨다운 아이콘의 표시 크기(픽셀).",
 	["The spacing in pixels between each cooldown icon."] = "각 쿨다운 아이콘 간의 간격(픽셀).",
-	["Arena Frames: anchors icons next to each enemy's arena frame. Linear Bar: displays all cooldowns in a single combined bar. Split: shows offensive cooldowns on the linear bar and defensive cooldowns on the arena frames."] = "투기장 프레임: 각 적의 투기장 프레임 옆에 아이콘을 고정합니다. 선형 바: 모든 쿨다운을 하나의 통합 바에 표시합니다. 분할: 공격 쿨다운은 선형 바에, 방어 쿨다운은 투기장 프레임에 표시합니다.",
 	["The direction cooldown icons grow from the arena frame anchor point."] = "쿨다운 아이콘이 투기장 프레임 앵커 포인트에서 성장하는 방향.",
 	["Horizontal pixel offset from the arena frame anchor point."] = "투기장 프레임 앵커 포인트로부터의 수평 픽셀 오프셋.",
 	["Vertical pixel offset from the arena frame anchor point."] = "투기장 프레임 앵커 포인트로부터의 수직 픽셀 오프셋.",
@@ -318,4 +314,24 @@ L:RegisterLocale("koKR", {
 	["Override the addon language. By default, your game client language is used."] = "애드온 언어를 변경합니다. 기본값은 게임 클라이언트 언어입니다.",
 	["Auto (client language)"] = "자동 (클라이언트 언어)",
 	["Language changed. Reload UI now?"] = "언어가 변경되었습니다. 지금 UI를 새로고침하시겠습니까?",
+	["Shows CC and defensive auras as one set of icons on party/raid frames."] = "군중 제어와 방어 오라를 파티/공격대 프레임에 하나의 아이콘 세트로 표시합니다.",
+	["Shows CC, defensives, and other important spells on the player/target/focus portraits."] = "플레이어/대상/주시 대상 초상화에 군중 제어, 방어 및 기타 중요 주문을 표시합니다.",
+	["Shows enemy arena opponent defensive cooldowns after their buffs expire."] = "버프가 만료된 후 적 투기장 상대의 방어 재사용 대기시간을 표시합니다.",
+	["Arena Frames: anchors icons next to each enemy's arena frame. Linear Bar: displays all cooldowns in a single combined bar."] = "투기장 프레임: 각 적의 투기장 프레임 옆에 아이콘을 고정합니다. 선형 바: 모든 쿨다운을 하나의 통합 바에 표시합니다.",
+	["A separate region for showing enemy defensive spells."] = "적의 방어 주문을 표시하기 위한 별도 영역입니다.",
+	["Important Notes"] = "중요 참고 사항",
+	["Sorts party/raid/arena frames and places you at the top/middle/bottom."] = "파티/공격대/투기장 프레임을 정렬하고 자신을 상단/중앙/하단에 배치합니다.",
+	["Shows markers above your team mates."] = "팀원 위에 표식을 표시합니다.",
+	["Shows overshields on frames and nameplates."] = "프레임과 이름표에 초과 보호막을 표시합니다.",
+	["Basically doubles your APM."] = "APM을 사실상 두 배로 늘려줍니다.",
+	["Shows your debuffs on enemy arena frames."] = "적 투기장 프레임에 자신의 디버프를 표시합니다.",
+	["Plays sound effects when getting killing blows."] = "결정타를 날릴 때 효과음을 재생합니다.",
+	["Shows fps and ping on a draggable UI element."] = "드래그 가능한 UI 요소에 fps와 핑을 표시합니다.",
+	["Shows a draggable timer on your UI when in queue."] = "대기열에 있을 때 UI에 드래그 가능한 타이머를 표시합니다.",
+	["Changes your tab key to target enemy players."] = "Tab 키로 적 플레이어를 대상으로 지정하도록 변경합니다.",
+	["Notifies you when entering or leaving combat."] = "전투 시작 또는 종료 시 알려줍니다.",
+	["Simple personal resource-style health + power bar you can tweak."] = "개인 자원 표시 스타일의 간단한 생명력 + 자원 바로, 원하는 대로 조정할 수 있습니다.",
+	["Fades out certain frames including bags, micro menu, and quest tracker."] = "가방, 마이크로 메뉴, 퀘스트 추적기 등 특정 프레임을 흐리게 처리합니다.",
+	["Customize the cooldown timers."] = "재사용 대기시간 타이머를 원하는 대로 설정할 수 있습니다.",
+	["Powerful icon skinning tool."] = "강력한 아이콘 스킨 도구입니다.",
 })
